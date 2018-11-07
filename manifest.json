@@ -1,0 +1,26 @@
+{
+  "short_name": "To Do List",
+  "name": "To Do List",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "theme_color": "#0d8c80",
+  "background_color": "#0d8c80",
+  "icons": [
+    {
+      "src": "images/app-icon-md.png",
+      "type": "image/png",
+      "sizes": "152x152"
+    },
+    {
+      "src": "images/app-icon-lg.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "images/app-icon-xl.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "index.html?pwa=true"
+}
