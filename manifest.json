@@ -1,6 +1,6 @@
 {
-  "short_name": "To Do List",
-  "name": "To Do List",
+  "short_name": "Tasks",
+  "name": "Tasks",
   "display": "fullscreen",
   "orientation": "portrait",
   "theme_color": "#0d8c80",
