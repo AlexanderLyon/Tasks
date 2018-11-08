@@ -40,40 +40,7 @@
   </head>
   <body>
 
-    <main>
-      <header>
-        <h1 contenteditable id="list-title">To-Do List</h1>
-        <p id="task-count">0 tasks</p>
-        <div id="controls">
-          <button id="menuBtn"><i class="fas fa-cog"></i></button>
-          <button id="undoBtn"><i class="fas fa-undo-alt"></i> Undo</button>
-        </div>
-      </header>
-
-      <section id="content">
-
-        <div id="incomplete-list">
-          <h2>Incomplete</h2>
-          <ul id="todo-list"></ul>
-          <form id="add-task">
-            <input type="text" name="task" autocomplete="off" placeholder="Add something to your list..."/>
-            <button type="submit">Add</button>
-          </form>
-        </div>
-
-      </section>
-    </main>
-
-    <aside>
-      <h2>Color theme</h2>
-      <div id="colors">
-        <div data-color="teal"></div>
-        <div data-color="blue"></div>
-        <div data-color="lavender"></div>
-        <div data-color="blush"></div>
-        <div data-color="grey"></div>
-      </div>
-    </aside>
+    <main id="app"></main>
 
     <script src="dist/main.bundle.js" type="text/javascript"></script>
   </body>
