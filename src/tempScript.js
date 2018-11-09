@@ -3,12 +3,6 @@
   const todoList = document.getElementById('todo-list');
   const inputField = document.querySelector('#add-task input[type="text"]');
   const removedTasks = [];
-  let database;
-  loadSettings();
-
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-  }
 
   document.getElementById('list-title').addEventListener('keyup', (e) => {
     const newTitle = document.getElementById('list-title').innerText.charAt(0).toUpperCase() + document.getElementById('list-title').innerText.substr(1);
@@ -19,6 +13,7 @@
     attachTaskEventHandlers(item);
   });
 
+  /*
   document.getElementById('add-task').addEventListener('submit', (e) => {
     e.preventDefault();
     const enteredText = inputField.value.charAt(0).toUpperCase() + inputField.value.substr(1);
@@ -26,118 +21,12 @@
       addNewTask(enteredText);
     }
   });
+  */
 
-  document.getElementById('menuBtn').addEventListener('click', (e) => {
-    if (e.target.classList.contains('open')) {
-      // Close settings
-      document.querySelector('main').style.right = '0px';
-      document.querySelector('aside').style.marginRight = '-250px';
-      e.target.classList.remove('open');
-    }
-    else {
-      // Open settings
-      document.querySelector('main').style.right = '250px';
-      document.querySelector('aside').style.margin = '0px';
-      e.target.classList.add('open');
-    }
-  });
-
-  document.querySelectorAll('#colors div').forEach((item) => {
-    item.addEventListener('click', (e) => {
-      setTheme(e.target.getAttribute('data-color'));
-    });
-  });
 
   document.getElementById('undoBtn').addEventListener('click', (e) => {
     restoreTask();
   });
-
-  // IndexedDB setup:
-  window.onload = () => {
-    let request = window.indexedDB.open('notes', 1);
-
-    request.onerror = () => {
-      console.error('Database failed to open');
-    };
-
-    request.onsuccess = () => {
-      console.log('Database loaded successfully');
-      database = request.result;
-      updateList();
-    };
-
-    request.onupgradeneeded = (e) => {
-      let database = e.target.result;
-      let objectStore = database.createObjectStore('notes', {keyPath: 'id', autoIncrement: true});
-      objectStore.createIndex('body', 'body', {unique: false});
-    };
-  };
-
-
-  function setTheme(color) {
-    color = color.toLowerCase();
-    localStorage.setItem('colorTheme', color);
-
-    const elements = [
-      document.querySelector('body'),
-      document.querySelector('header'),
-      document.querySelector('aside'),
-      document.querySelectorAll('#content h2')
-    ];
-
-    elements.forEach((el) => {
-      if (el.length > 0) {
-        el.forEach((child) => {
-          if (child.classList.length) {
-            child.className = child.className.replace(/^theme-.*/g, 'theme-' + color);
-          }
-          else {
-            child.classList.add('theme-' + color);
-          }
-        });
-      }
-      else {
-        if (el.classList.length) {
-          el.className = el.className.replace(/^theme-.*/g, 'theme-' + color);
-        }
-        else {
-          el.classList.add('theme-' + color);
-        }
-      }
-    });
-  }
-
-
-  function addNewTask(enteredText) {
-    // Add to database:
-    let newNote = {body: enteredText};
-    let transaction = database.transaction(['notes'], 'readwrite');
-    let objectStore = transaction.objectStore('notes');
-    let request = objectStore.add(newNote);
-
-    transaction.oncomplete = () => {
-      // Added task successfully, update the list with database entries:
-      updateList();
-      inputField.value = "";
-    };
-
-    transaction.onerror = () => {
-      alert("There was a problem saving this task");
-    };
-  }
-
-
-  function loadSettings() {
-    // Color theme:
-    if (localStorage.getItem('colorTheme')) {
-      setTheme(localStorage.getItem('colorTheme'));
-    }
-
-    // Custom list title:
-    if (localStorage.getItem('listTitle')) {
-      document.getElementById('list-title').innerText = localStorage.getItem('listTitle');
-    }
-  }
 
 
   function updateList() {
@@ -197,6 +86,7 @@
       }
     });
 
+    /*
     options.addEventListener('click', (e) => {
       // Options button
       if (e.target.matches('.optionsBtn') || e.target.parentElement.matches('.optionsBtn')) {
@@ -245,7 +135,7 @@
         }
       }
     });
-
+    */
 
     element.querySelector('.task-content').addEventListener('keydown', (e) => {
       if (e.keyCode === 13) {
@@ -293,39 +183,6 @@
     countRequest.onsuccess = () => {
       const taskCount = countRequest.result;
       document.getElementById('task-count').innerText = taskCount === 1 ? '1 task' : taskCount + ' tasks';
-    };
-  }
-
-
-  function crossOff(item) {
-    /* Removes completed task from list */
-    item.classList.add('removed');
-
-    window.setTimeout(() => {
-      removedTasks.push(item.querySelector('.task-content').innerText);
-      deleteFromDatabase(Number(item.getAttribute('data-note-id')));
-      document.getElementById('undoBtn').style.display = (removedTasks.length == 0) ? 'none' : 'block';
-    }, 1800);
-  }
-
-
-  function restoreTask() {
-    if (removedTasks.length > 0) {
-      const restoredText = removedTasks.pop();
-      addNewTask(restoredText);
-      document.getElementById('undoBtn').style.display = (removedTasks.length == 0) ? 'none' : 'block';
-    }
-  }
-
-
-  function deleteFromDatabase(noteID) {
-    let transaction = database.transaction(['notes'], 'readwrite');
-    let objectStore = transaction.objectStore('notes');
-    let request = objectStore.delete(noteID);
-
-    transaction.oncomplete = () => {
-      // Entry successfully deleted
-      updateList();
     };
   }
 })();

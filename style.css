@@ -99,6 +99,9 @@ h2.theme-grey { color: #414750; }
 #controls button:focus { outline: none; }
 #controls button:hover { color: #bfbfbf; }
 
+#menu h2 {
+  color: white;
+}
 #menuBtn {
   top: 10px;
   font-size: 25px;
@@ -116,11 +119,10 @@ h2.theme-grey { color: #414750; }
   margin: 20px auto 0px auto;
 }
 
-main h2 {
+.list h2 {
   display: none;
   font-weight: bold;
   margin: 10px 0px;
-  color: #0d8c80;
 }
 
 .list {
