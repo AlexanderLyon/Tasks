@@ -6,37 +6,41 @@ export class List extends React.Component {
     super(props);
     this.state = {
       title: 'New List',
-      tasks: null,
-      taskList: []
+      taskList: [],
+      taskCount: 0
     };
 
     this.printTasks = this.printTasks.bind(this);
     this.addNewTask = this.addNewTask.bind(this);
+    this.updateList = this.updateList.bind(this);
     this.crossOff = this.crossOff.bind(this);
     //this.restoreTask = this.restoreTask.bind(this);
+    this.handleClick = this.handleClick.bind(this);
     this.deleteFromDatabase = this.deleteFromDatabase.bind(this);
   }
 
   addNewTask(e) {
     e.preventDefault();
-    const enteredText = e.target[0].value;
+    const enteredText = e.target[0].value.charAt(0).toUpperCase() + e.target[0].value.substr(1);
     const form = e.target;
 
-    // Add to database:
-    let newNote = {body: enteredText};
-    let transaction = this.props.database.transaction(['notes'], 'readwrite');
-    let objectStore = transaction.objectStore('notes');
-    let request = objectStore.add(newNote);
+    if (enteredText.trim().length > 0) {
+      // Add to database:
+      let newNote = {body: enteredText};
+      let transaction = this.props.database.transaction(['notes'], 'readwrite');
+      let objectStore = transaction.objectStore('notes');
+      let request = objectStore.add(newNote);
 
-    transaction.oncomplete = () => {
-      form.querySelector('input').value = "";
-      // Added task successfully, print list again:
-      this.forceUpdate();
-    };
+      transaction.oncomplete = () => {
+        form.querySelector('input').value = "";
+        // Added task successfully, print list again:
+        this.updateList();
+      };
 
-    transaction.onerror = () => {
-      alert("There was a problem saving this task");
-    };
+      transaction.onerror = () => {
+        alert("There was a problem saving this task");
+      };
+    }
   }
 
 
@@ -89,23 +93,18 @@ export class List extends React.Component {
     }
   }
 
-  crossOff(e) {
-    e.stopPropagation();
-    const el = e.target;
-    if (el.classList.contains('edit-mode')) {
-      /* Editable, ignore */
-    }
-    else if (!el.querySelector('.options').contains(e.target)) {
-      /* Removes completed task from list */
-      el.classList.add('removed');
 
-      window.setTimeout(() => {
-        //removedTasks.push(el.querySelector('.task-content').innerText);
-        this.deleteFromDatabase(Number(el.getAttribute('data-note-id')));
-        document.getElementById('undoBtn').style.display = (removedTasks.length == 0) ? 'none' : 'block';
-      }, 1800);
-    }
+  crossOff(el) {
+    /* Removes completed task from list */
+    el.classList.add('removed');
+
+    window.setTimeout(() => {
+      //removedTasks.push(el.querySelector('.task-content').innerText);
+      this.deleteFromDatabase(Number(el.getAttribute('data-note-id')));
+      //document.getElementById('undoBtn').style.display = (removedTasks.length == 0) ? 'none' : 'block';
+    }, 1800);
   }
+
 
 /*
   restoreTask() {
@@ -118,6 +117,16 @@ export class List extends React.Component {
   */
 
 
+  handleClick(e) {
+    if (e.target.classList.contains('edit-mode')) {
+      // Editable
+    }
+    else {
+      this.crossOff(e.target);
+    }
+  }
+
+
   deleteFromDatabase(noteID) {
     let transaction = this.props.database.transaction(['notes'], 'readwrite');
     let objectStore = transaction.objectStore('notes');
@@ -125,14 +134,14 @@ export class List extends React.Component {
 
     transaction.oncomplete = () => {
       // Entry successfully deleted
-      this.render();
+      this.updateList();
     };
   }
 
 
   printTasks() {
     const fetchedTasks = this.state.taskList.map( (entry) => (
-      <li onClick={this.crossOff} data-note-id={entry.id}>
+      <li onClick={this.handleClick} data-note-id={entry.id}>
         <span className='task-content'>{entry.body}</span>
         <span className='options'>
           <span className='editBtn'><i className='fas fa-pencil-alt'></i></span>
@@ -145,13 +154,31 @@ export class List extends React.Component {
     return fetchedTasks;
   }
 
+
   componentWillMount() {
-    // Load saved Tasks
+    // Load saved Tasks on initial load
+    this.updateList();
+  }
+
+
+  updateList() {
+    // Get up-to-date list from database
     let objectStore = this.props.database.transaction('notes').objectStore('notes');
     let allEntries = objectStore.getAll();
 
     allEntries.onsuccess = () => {
-      this.setState({ taskList: allEntries.result });
+      let countRequest = objectStore.count();
+
+      countRequest.onsuccess = () => {
+        const taskCount = countRequest.result;
+
+        this.setState({
+          taskList: allEntries.result,
+          taskCount: taskCount === 1 ? '1 task' : taskCount + ' tasks'
+        });
+
+        this.props.updateTaskCount(this.state.taskCount);
+      };
     };
   }
 
@@ -159,7 +186,7 @@ export class List extends React.Component {
   render() {
     return (
       <div className="list">
-        <h2>{this.state.title}</h2>
+        <h2>Incomplete</h2>
         <ul id="todo-list">
           { this.printTasks() }
         </ul>

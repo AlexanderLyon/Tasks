@@ -1,72 +1,10 @@
 
 (() => {
-  const todoList = document.getElementById('todo-list');
-  const inputField = document.querySelector('#add-task input[type="text"]');
   const removedTasks = [];
-
-  document.getElementById('list-title').addEventListener('keyup', (e) => {
-    const newTitle = document.getElementById('list-title').innerText.charAt(0).toUpperCase() + document.getElementById('list-title').innerText.substr(1);
-    localStorage.setItem('listTitle', newTitle);
-  });
-
-  document.querySelectorAll('#todo-list li').forEach((item) => {
-    attachTaskEventHandlers(item);
-  });
-
-  /*
-  document.getElementById('add-task').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const enteredText = inputField.value.charAt(0).toUpperCase() + inputField.value.substr(1);
-    if (enteredText.trim().length > 0) {
-      addNewTask(enteredText);
-    }
-  });
-  */
-
 
   document.getElementById('undoBtn').addEventListener('click', (e) => {
     restoreTask();
   });
-
-
-  function updateList() {
-    // Empty list
-    while (todoList.firstChild) {
-      todoList.removeChild(todoList.firstChild);
-    }
-
-    let objectStore = database.transaction('notes').objectStore('notes');
-    objectStore.openCursor().onsuccess = (e) => {
-      let cursor = e.target.result;
-
-      if (cursor) {
-        // Create a list item:
-        let newItem = document.createElement('li');
-        newItem.setAttribute('data-note-id', cursor.value.id);
-        newItem.innerHTML = `<span class='task-content'>${cursor.value.body}</span>
-          <span class='options'>
-            <span class='editBtn'><i class='fas fa-pencil-alt'></i></span>
-            <span class='deleteBtn'><i class='fas fa-trash'></i></span>
-            <span class='optionsBtn'><i class='fas fa-ellipsis-v'></i></span>
-          </span>`;
-        todoList.appendChild(newItem);
-        attachTaskEventHandlers(newItem);
-
-        document.querySelectorAll('#content h2').forEach((heading) => {
-          heading.style.display = 'block';
-        });
-        cursor.continue();
-      }
-      else if (!todoList.firstChild) {
-        document.querySelectorAll('#content h2').forEach((heading) => {
-          heading.style.display = 'none';
-        });
-        console.warn("No notes found");
-      }
-
-      updateTaskCount();
-    };
-  }
 
 
   function attachTaskEventHandlers(element) {
@@ -174,15 +112,4 @@
     });
   }
 
-
-  function updateTaskCount() {
-    let transaction = database.transaction(['notes'], 'readwrite');
-    let objectStore = transaction.objectStore('notes');
-    let countRequest = objectStore.count();
-
-    countRequest.onsuccess = () => {
-      const taskCount = countRequest.result;
-      document.getElementById('task-count').innerText = taskCount === 1 ? '1 task' : taskCount + ' tasks';
-    };
-  }
 })();

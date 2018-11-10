@@ -19,6 +19,7 @@ header {
 #list-title {
   margin-bottom: 10px;
   color: white;
+  width: fit-content;
   max-width: 85%;
 }
 header p {

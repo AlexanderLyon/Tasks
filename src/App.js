@@ -8,16 +8,19 @@ export class App extends React.Component {
     super(props);
     this.state = {
       database: null,
+      listTitle: "To-Do List",
       taskCount: 0,
       colorTheme: 'teal'
     };
 
     this.loadDatabase = this.loadDatabase.bind(this);
+    this.updateTaskCount = this.updateTaskCount.bind(this);
+    this.updateListName = this.updateListName.bind(this);
     this.setTheme = this.setTheme.bind(this);
   }
 
   loadDatabase() {
-    let request = window.indexedDB.open('notes', 1);
+    let request = window.indexedDB.open('NotesData', 1);
 
     request.onerror = () => {
       console.error('Database failed to open');
@@ -30,11 +33,20 @@ export class App extends React.Component {
     };
 
     request.onupgradeneeded = (e) => {
-      this.setState({ database: request.result });
-      let objectStore = this.state.database.createObjectStore('notes', {keyPath: 'id', autoIncrement: true});
-      objectStore.createIndex('body', 'body', {unique: false});
-    };
+      let db = e.target.result;
 
+      if (!db.objectStoreNames.contains('notes')) {
+        let objectStore = db.createObjectStore('notes', {keyPath: 'id', autoIncrement: true});
+        objectStore.createIndex('body', 'body', {unique: false});
+      }
+
+      setTimeout(() => {
+        this.setState({ database: db }, () => {
+          console.log('Database created');
+        });
+      }, 3000);
+
+    };
   }
 
   setTheme(color) {
@@ -70,6 +82,7 @@ export class App extends React.Component {
     });
   }
 
+
   menuBtnClick(e) {
     if (e.target.classList.contains('open')) {
       // Close settings
@@ -83,6 +96,25 @@ export class App extends React.Component {
       document.querySelector('aside').style.margin = '0px';
       e.target.classList.add('open');
     }
+  }
+
+
+  updateListName(e) {
+    if (e.target.innerText.trim().length > 0) {
+      const newTitle = e.target.innerText.charAt(0).toUpperCase() + e.target.innerText.substr(1);
+      localStorage.setItem('listTitle', newTitle);
+    }
+    else {
+      // Empty field
+      localStorage.setItem('listTitle', 'New List');
+    }
+  }
+
+
+  updateTaskCount(val) {
+    this.setState({
+      taskCount: val
+    });
   }
 
 
@@ -103,7 +135,7 @@ export class App extends React.Component {
     return (
       <div>
         <header>
-          <h1 contentEditable id="list-title">To-Do List</h1>
+          <h1 contentEditable id="list-title" onKeyUp={this.updateListName}>{this.state.listTitle}</h1>
           <p id="task-count">{this.state.taskCount}</p>
           <div id="controls">
             <button id="menuBtn" onClick={this.menuBtnClick}><i className="fas fa-cog"></i></button>
@@ -113,7 +145,10 @@ export class App extends React.Component {
 
         <section id="content">
           { this.state.database &&
-            <List title={this.state.listTitle} database={this.state.database}/>
+            <List
+              updateTaskCount={this.updateTaskCount}
+              database={this.state.database}
+            />
           }
         </section>
 
