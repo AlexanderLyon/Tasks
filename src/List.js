@@ -7,6 +7,7 @@ export class List extends React.Component {
     this.state = {
       title: 'New List',
       taskList: [],
+      removedList: [],
       taskCount: 0
     };
 
@@ -14,15 +15,24 @@ export class List extends React.Component {
     this.addNewTask = this.addNewTask.bind(this);
     this.updateList = this.updateList.bind(this);
     this.crossOff = this.crossOff.bind(this);
-    //this.restoreTask = this.restoreTask.bind(this);
+    this.restoreTask = this.restoreTask.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.optionsClick = this.optionsClick.bind(this);
     this.deleteFromDatabase = this.deleteFromDatabase.bind(this);
   }
 
-  addNewTask(e) {
-    e.preventDefault();
-    const enteredText = e.target[0].value.charAt(0).toUpperCase() + e.target[0].value.substr(1);
-    const form = e.target;
+  addNewTask(e, text) {
+    let enteredText;
+    let form;
+
+    if (e) {
+      e.preventDefault();
+      enteredText = e.target[0].value.charAt(0).toUpperCase() + e.target[0].value.substr(1);
+      form = e.target;
+    }
+    else if (text) {
+      enteredText = text;
+    }
 
     if (enteredText.trim().length > 0) {
       // Add to database:
@@ -32,7 +42,9 @@ export class List extends React.Component {
       let request = objectStore.add(newNote);
 
       transaction.oncomplete = () => {
-        form.querySelector('input').value = "";
+        if (form) {
+          form.querySelector('input').value = "";
+        }
         // Added task successfully, print list again:
         this.updateList();
       };
@@ -44,85 +56,67 @@ export class List extends React.Component {
   }
 
 
-  optionsClick(e) {
-    // Options button
-    if (e.target.matches('.optionsBtn') || e.target.parentElement.matches('.optionsBtn')) {
-      if (element.classList.contains('options-open')) {
-        // Close options
-        element.classList.remove('options-open');
-      }
-      else {
-        // Open options
-        element.classList.add('options-open');
-      }
-    }
-
-    // Delete button
-    else if (e.target.matches('.deleteBtn') || e.target.parentElement.matches('.deleteBtn')) {
-      removedTasks.push(element.querySelector('.task-content').innerText);
-      deleteFromDatabase(Number(element.getAttribute('data-note-id')));
-      document.getElementById('undoBtn').style.display = (removedTasks.length == 0) ? 'none' : 'block';
-    }
-
-    // Edit button
-    else if (e.target.matches('.editBtn') || e.target.parentElement.matches('.editBtn')) {
-      if (element.classList.contains('edit-mode')) {
-        // Disable editing
-        element.classList.remove('edit-mode');
-        element.querySelector('.task-content').blur();
-        element.querySelector('.task-content').setAttribute('contenteditable', false);
-        element.querySelector('.editBtn i').classList.replace('fa-save', 'fa-pencil-alt');
-      }
-      else {
-        // Enable editing
-        element.classList.add('edit-mode');
-        element.querySelector('.task-content').setAttribute('contenteditable', true);
-        element.querySelector('.editBtn i').classList.replace('fa-pencil-alt', 'fa-save');
-        element.querySelector('.task-content').focus();
-
-        // Move caret:
-        let textNode = element.querySelector('.task-content').firstChild;
-        let caret = textNode.length;
-        let range = document.createRange();
-        range.setStart(textNode, caret);
-        range.setEnd(textNode, caret);
-        let sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-      }
-    }
-  }
-
-
   crossOff(el) {
     /* Removes completed task from list */
     el.classList.add('removed');
 
     window.setTimeout(() => {
-      //removedTasks.push(el.querySelector('.task-content').innerText);
+      let arr = [...this.state.removedList];
+      arr.push(el.querySelector('.task-content').innerText);
+      this.setState({ removedList: arr });
+
       this.deleteFromDatabase(Number(el.getAttribute('data-note-id')));
-      //document.getElementById('undoBtn').style.display = (removedTasks.length == 0) ? 'none' : 'block';
     }, 1800);
   }
 
 
-/*
   restoreTask() {
-    if (removedTasks.length > 0) {
-      const restoredText = removedTasks.pop();
-      addNewTask(restoredText);
-      document.getElementById('undoBtn').style.display = (removedTasks.length == 0) ? 'none' : 'block';
+    const recentlyDeleted = [...this.state.removedList];
+    const restoredText = recentlyDeleted.pop();
+    this.addNewTask(false, restoredText);
+    this.setState({ removedList: recentlyDeleted });
+  }
+
+
+  optionsClick(options, element, open) {
+    // If optionsBtn
+    if (options.querySelector('.optionsBtn').contains(element)) {
+      if (open) {
+        // Close options menu
+        options.classList.remove('options-open');
+      }
+      else {
+        // Open options menu
+        options.classList.add('options-open');
+      }
+    }
+    else if (options.querySelector('.editBtn').contains(element)) {
+      // Edit clicked
+    }
+    else if (options.querySelector('.deleteBtn').contains(element)) {
+      // Delete clicked
+      let arr = [...this.state.removedList];
+      arr.push(element.querySelector('.task-content').innerText);
+      this.setState({ removedList: arr });
+
+      deleteFromDatabase(Number(element.getAttribute('data-note-id')));
     }
   }
-  */
 
 
   handleClick(e) {
-    if (e.target.classList.contains('edit-mode')) {
-      // Editable
+    e.stopPropagation();
+    const element = e.currentTarget;
+
+    if (element.classList.contains('options')) {
+      const open = element.classList.contains('options-open') ? true : false;
+      this.optionsClick(element, e.target, open);
     }
-    else {
-      this.crossOff(e.target);
+    else if (element.classList.contains('edit-mode')) {
+      // Editable, ignore click
+    }
+    else if (!element.classList.contains('edit-mode')) {
+      this.crossOff(element);
     }
   }
 
@@ -143,7 +137,7 @@ export class List extends React.Component {
     const fetchedTasks = this.state.taskList.map( (entry) => (
       <li onClick={this.handleClick} data-note-id={entry.id}>
         <span className='task-content'>{entry.body}</span>
-        <span className='options'>
+        <span className='options' onClick={this.handleClick}>
           <span className='editBtn'><i className='fas fa-pencil-alt'></i></span>
           <span className='deleteBtn'><i className='fas fa-trash'></i></span>
           <span className='optionsBtn'><i className='fas fa-ellipsis-v'></i></span>
@@ -184,9 +178,16 @@ export class List extends React.Component {
 
 
   render() {
+    const colorTheme = 'theme-' + this.props.colorTheme;
+
     return (
       <div className="list">
-        <h2>Incomplete</h2>
+        {this.state.taskList.length > 0 &&
+          <h2 className={colorTheme}>Incomplete</h2>
+        }
+        {this.state.removedList.length > 0 &&
+          <button id="undoBtn" onClick={this.restoreTask}><i className="fas fa-undo-alt"></i> Undo</button>
+        }
         <ul id="todo-list">
           { this.printTasks() }
         </ul>

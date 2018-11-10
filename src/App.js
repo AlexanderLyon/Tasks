@@ -56,28 +56,15 @@ export class App extends React.Component {
     const elements = [
       document.querySelector('body'),
       document.querySelector('header'),
-      document.querySelector('aside'),
-      //document.querySelectorAll('.list h2')
+      document.querySelector('aside')
     ];
 
     elements.forEach((el) => {
-      if (el.length > 0) {
-        el.forEach((child) => {
-          if (child.classList.length) {
-            child.className = child.className.replace(/^theme-.*/g, 'theme-' + color);
-          }
-          else {
-            child.classList.add('theme-' + color);
-          }
-        });
+      if (el.classList.length) {
+        el.className = el.className.replace(/^theme-.*/g, 'theme-' + color);
       }
       else {
-        if (el.classList.length) {
-          el.className = el.className.replace(/^theme-.*/g, 'theme-' + color);
-        }
-        else {
-          el.classList.add('theme-' + color);
-        }
+        el.classList.add('theme-' + color);
       }
     });
   }
@@ -139,7 +126,6 @@ export class App extends React.Component {
           <p id="task-count">{this.state.taskCount}</p>
           <div id="controls">
             <button id="menuBtn" onClick={this.menuBtnClick}><i className="fas fa-cog"></i></button>
-            <button id="undoBtn"><i className="fas fa-undo-alt"></i> Undo</button>
           </div>
         </header>
 
@@ -147,6 +133,7 @@ export class App extends React.Component {
           { this.state.database &&
             <List
               updateTaskCount={this.updateTaskCount}
+              colorTheme={this.state.colorTheme}
               database={this.state.database}
             />
           }

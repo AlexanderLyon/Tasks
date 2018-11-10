@@ -108,12 +108,6 @@ h2.theme-grey { color: #414750; }
   font-size: 25px;
 }
 
-#undoBtn {
-  display: none;
-  bottom: 8px;
-  font-size: 0.9em;
-}
-
 #content {
   width: 600px;
   max-width: 90%;
@@ -121,9 +115,18 @@ h2.theme-grey { color: #414750; }
 }
 
 .list h2 {
-  display: none;
+  display: inline-block;
   font-weight: bold;
   margin: 10px 0px;
+}
+
+#undoBtn {
+  display: inline-block;
+  float: right;
+  font-size: 0.9em;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .list {
