@@ -17,6 +17,8 @@ export class List extends React.Component {
     this.crossOff = this.crossOff.bind(this);
     this.restoreTask = this.restoreTask.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.taskKeydown = this.taskKeydown.bind(this);
+    this.taskKeyup = this.taskKeyup.bind(this);
     this.optionsClick = this.optionsClick.bind(this);
     this.deleteFromDatabase = this.deleteFromDatabase.bind(this);
   }
@@ -78,7 +80,7 @@ export class List extends React.Component {
   }
 
 
-  optionsClick(options, element, open) {
+  optionsClick(options, taskEl, element, open) {
     // If optionsBtn
     if (options.querySelector('.optionsBtn').contains(element)) {
       if (open) {
@@ -92,14 +94,38 @@ export class List extends React.Component {
     }
     else if (options.querySelector('.editBtn').contains(element)) {
       // Edit clicked
+      if (taskEl.classList.contains('edit-mode')) {
+        // Disable editing
+        taskEl.classList.remove('edit-mode');
+        taskEl.querySelector('.task-content').blur();
+        taskEl.querySelector('.task-content').setAttribute('contenteditable', false);
+        taskEl.querySelector('.editBtn i').classList.replace('fa-save', 'fa-pencil-alt');
+      }
+      else {
+        // Enable editing
+        taskEl.classList.add('edit-mode');
+        taskEl.querySelector('.task-content').setAttribute('contenteditable', true);
+        taskEl.querySelector('.editBtn i').classList.replace('fa-pencil-alt', 'fa-save');
+        taskEl.querySelector('.task-content').focus();
+
+        // Move caret:
+        let textNode = taskEl.querySelector('.task-content').firstChild;
+        let caret = textNode.length;
+        let range = document.createRange();
+        range.setStart(textNode, caret);
+        range.setEnd(textNode, caret);
+        let sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
     }
     else if (options.querySelector('.deleteBtn').contains(element)) {
       // Delete clicked
       let arr = [...this.state.removedList];
-      arr.push(element.querySelector('.task-content').innerText);
+      arr.push(taskEl.querySelector('.task-content').innerText);
       this.setState({ removedList: arr });
 
-      deleteFromDatabase(Number(element.getAttribute('data-note-id')));
+      this.deleteFromDatabase(Number(taskEl.getAttribute('data-note-id')));
     }
   }
 
@@ -110,7 +136,8 @@ export class List extends React.Component {
 
     if (element.classList.contains('options')) {
       const open = element.classList.contains('options-open') ? true : false;
-      this.optionsClick(element, e.target, open);
+      const taskEl = element.parentElement;
+      this.optionsClick(element, taskEl, e.target, open);
     }
     else if (element.classList.contains('edit-mode')) {
       // Editable, ignore click
@@ -118,6 +145,45 @@ export class List extends React.Component {
     else if (!element.classList.contains('edit-mode')) {
       this.crossOff(element);
     }
+  }
+
+
+  taskKeydown(e) {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      const el = e.currentTarget;
+
+      // Disable editing
+      el.classList.remove('edit-mode');
+      el.querySelector('.task-content').blur();
+      el.querySelector('.task-content').setAttribute('contenteditable', false);
+      el.querySelector('.editBtn i').classList.replace('fa-save', 'fa-pencil-alt');
+      el.querySelector('.optionsBtn').click();
+    }
+  }
+
+  taskKeyup(e) {
+    // Edit database entry
+    const el = e.currentTarget;
+    let newText = el.innerText;
+    let key = el.getAttribute('data-note-id');
+    let transaction = this.props.database.transaction(['notes'], 'readwrite');
+    let objectStore = transaction.objectStore('notes');
+
+    objectStore.openCursor().onsuccess = (event) => {
+      const cursor = event.target.result;
+      if (cursor) {
+        if (cursor.key == key) {
+          const updateData = cursor.value;
+          updateData.body = newText;
+          const request = cursor.update(updateData);
+          request.onsuccess = function() {
+            // Database updated successfully
+          };
+        }
+        cursor.continue();
+      }
+    };
   }
 
 
@@ -135,7 +201,11 @@ export class List extends React.Component {
 
   printTasks() {
     const fetchedTasks = this.state.taskList.map( (entry) => (
-      <li onClick={this.handleClick} data-note-id={entry.id}>
+      <li
+        onClick={this.handleClick}
+        onKeyDown={this.taskKeydown}
+        onKeyUp={this.taskKeyup}
+        data-note-id={entry.id}>
         <span className='task-content'>{entry.body}</span>
         <span className='options' onClick={this.handleClick}>
           <span className='editBtn'><i className='fas fa-pencil-alt'></i></span>
@@ -186,7 +256,7 @@ export class List extends React.Component {
           <h2 className={colorTheme}>Incomplete</h2>
         }
         {this.state.removedList.length > 0 &&
-          <button id="undoBtn" onClick={this.restoreTask}><i className="fas fa-undo-alt"></i> Undo</button>
+          <button id="undoBtn" className={colorTheme} onClick={this.restoreTask}><i className="fas fa-undo-alt"></i> Undo</button>
         }
         <ul id="todo-list">
           { this.printTasks() }

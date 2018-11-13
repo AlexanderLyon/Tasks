@@ -69,15 +69,15 @@ aside {
 }
 
 div[data-color="teal"], .theme-teal:not(h2) { background-color: #0d8c80; }
-h2.theme-teal { color: #0d8c80; }
+h2.theme-teal, button.theme-teal { color: #0d8c80; }
 div[data-color="blue"], .theme-blue:not(h2) { background-color: #206c8a; }
-h2.theme-blue { color: #206c8a; }
+h2.theme-blue, button.theme-blue { color: #206c8a; }
 div[data-color="lavender"], .theme-lavender:not(h2) { background-color: #996aa2; }
-h2.theme-lavender { color: #996aa2; }
+h2.theme-lavender, button.theme-lavender { color: #996aa2; }
 div[data-color="blush"], .theme-blush:not(h2) { background-color: #ce8e91; }
-h2.theme-blush { color: #ce8e91; }
+h2.theme-blush, button.theme-blush { color: #ce8e91; }
 div[data-color="grey"], .theme-grey:not(h2) { background-color: #414750; }
-h2.theme-grey { color: #414750; }
+h2.theme-grey, button.theme-grey { color: #414750; }
 
 #controls {
   position: absolute;
@@ -122,11 +122,16 @@ h2.theme-grey { color: #414750; }
 
 #undoBtn {
   display: inline-block;
+  margin-top: 10px;
+  height: 32px;
   float: right;
   font-size: 0.9em;
   background: none;
   border: none;
   cursor: pointer;
+}
+#undoBtn:hover {
+  opacity: 0.6;
 }
 
 .list {
