@@ -68,6 +68,7 @@ export class List extends React.Component {
       this.setState({ removedList: arr });
 
       this.deleteFromDatabase(Number(el.getAttribute('data-note-id')));
+      el.classList.remove('removed');
     }, 1800);
   }
 

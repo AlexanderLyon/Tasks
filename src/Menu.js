@@ -15,8 +15,10 @@ export class Menu extends React.Component {
   }
 
   render() {
+    const colorTheme = 'theme-' + this.props.colorTheme;
+
     return (
-      <aside id="menu">
+      <aside id="menu" className={colorTheme}>
         <h2>Color theme</h2>
         <div id="colors">
           <div onClick={this.handleColorClick} data-color="teal"></div>

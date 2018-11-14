@@ -53,20 +53,16 @@ export class App extends React.Component {
     color = color.toLowerCase();
     localStorage.setItem('colorTheme', color);
 
-    const elements = [
-      document.querySelector('body'),
-      document.querySelector('header'),
-      document.querySelector('aside')
-    ];
+    const body = document.querySelector('body');
 
-    elements.forEach((el) => {
-      if (el.classList.length) {
-        el.className = el.className.replace(/^theme-.*/g, 'theme-' + color);
-      }
-      else {
-        el.classList.add('theme-' + color);
-      }
-    });
+    if (body.classList.length) {
+      body.className = body.className.replace(/^theme-.*/g, 'theme-' + color);
+    }
+    else {
+      body.classList.add('theme-' + color);
+    }
+
+    this.setState({colorTheme: color});
   }
 
 
@@ -119,9 +115,11 @@ export class App extends React.Component {
   }
 
   render() {
+    const colorTheme = 'theme-' + this.state.colorTheme;
+
     return (
       <div>
-        <header>
+        <header className={colorTheme}>
           <h1 contentEditable id="list-title" onKeyUp={this.updateListName}>{this.state.listTitle}</h1>
           <p id="task-count">{this.state.taskCount}</p>
           <div id="controls">
@@ -139,7 +137,7 @@ export class App extends React.Component {
           }
         </section>
 
-        <Menu setTheme={this.setTheme}/>
+        <Menu colorTheme={this.state.colorTheme} setTheme={this.setTheme}/>
       </div>
     );
   }
