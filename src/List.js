@@ -6,6 +6,7 @@ export class List extends React.Component {
     super(props);
     this.state = {
       title: 'New List',
+      lastUpdated: null,
       taskList: [],
       removedList: [],
       taskCount: 0
@@ -13,6 +14,7 @@ export class List extends React.Component {
 
     this.printTasks = this.printTasks.bind(this);
     this.addNewTask = this.addNewTask.bind(this);
+    this.getLastUpdate = this.getLastUpdate.bind(this);
     this.updateList = this.updateList.bind(this);
     this.crossOff = this.crossOff.bind(this);
     this.restoreTask = this.restoreTask.bind(this);
@@ -48,7 +50,7 @@ export class List extends React.Component {
           form.querySelector('input').value = "";
         }
         // Added task successfully, print list again:
-        this.updateList();
+        this.updateList(true);
       };
 
       transaction.onerror = () => {
@@ -195,7 +197,7 @@ export class List extends React.Component {
 
     transaction.oncomplete = () => {
       // Entry successfully deleted
-      this.updateList();
+      this.updateList(true);
     };
   }
 
@@ -226,7 +228,29 @@ export class List extends React.Component {
   }
 
 
-  updateList() {
+  getLastUpdate() {
+    const lastUpdated = new Date(this.state.lastUpdated);
+    const now = new Date();
+    const diff = Math.floor((now - lastUpdated) / (1000*60*60*24));
+    let result;
+
+    switch (diff) {
+      case 0:
+        result = 'today';
+        break;
+      case 1:
+        result = '1 day ago';
+        break;
+      default:
+        result = diff + ' days ago';
+        break;
+    }
+
+    return result;
+  }
+
+
+  updateList(changeMade) {
     // Get up-to-date list from database
     let objectStore = this.props.database.transaction('notes').objectStore('notes');
     let allEntries = objectStore.getAll();
@@ -237,9 +261,14 @@ export class List extends React.Component {
       countRequest.onsuccess = () => {
         const taskCount = countRequest.result;
 
+        if (changeMade) {
+          localStorage.setItem('lastUpdated', new Date());
+        }
+
         this.setState({
           taskList: allEntries.result,
-          taskCount: taskCount === 1 ? '1 task' : taskCount + ' tasks'
+          taskCount: taskCount === 1 ? '1 task' : taskCount + ' tasks',
+          lastUpdated: localStorage.getItem('lastUpdated')
         });
 
         this.props.updateTaskCount(this.state.taskCount);
@@ -258,6 +287,9 @@ export class List extends React.Component {
         }
         {this.state.removedList.length > 0 &&
           <button id="undoBtn" className={colorTheme} onClick={this.restoreTask}><i className="fas fa-undo-alt"></i> Undo</button>
+        }
+        {this.state.lastUpdated &&
+          <p className="last-updated">Last updated {this.getLastUpdate()}</p>
         }
         <ul id="todo-list">
           { this.printTasks() }
