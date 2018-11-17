@@ -7,6 +7,7 @@
 body {
   font-family: 'Quicksand', sans-serif;
   background-color: #0d8c80;
+  -webkit-font-smoothing: antialiased;
 }
 
 header {
@@ -34,7 +35,7 @@ main {
   height: auto;
   min-height: 100vh;
   padding-bottom: 50px;
-  background-color: #dde3ea;
+  background-color: #f7f7f7;
   transition: all 200ms ease-in-out;
 }
 aside {
@@ -147,23 +148,23 @@ h2.theme-grey, button.theme-grey { color: #414750; }
   color: #939294;
 }
 
-#todo-list li:first-of-type {
-  border-top: 1px solid #bfbfbf;
-}
-
 #todo-list li {
   position: relative;
+  margin: 14px 0px;
   padding: 8px 45px 8px 22px;
   height: 47px;
   line-height: 31px;
   font-weight: 600;
   font-size: 18px;
   white-space: nowrap;
+  border: none;
+  border-radius: 6px;
+  box-shadow: rgba(141, 141, 142, 0.2) 0px 4px 40px 4px, rgba(197, 197, 197, 0.2) 0px 20px 15px -15px;
   overflow: hidden;
   text-overflow: ellipsis;
-  border-bottom: 1px solid #bfbfbf;
   color: #555555;
   transition: 200ms;
+  background-color: #FFFFFF;
   background-image: url('images/openCircle.svg');
   background-repeat: no-repeat;
   background-size: 19px 19px;
@@ -215,7 +216,6 @@ li.edit-mode .task-content:focus { outline: none; }
   top: 0px;
   width: 35px;
   height: 100%;
-  background-color: #dde3ea;
 }
 .options-open .options { width: 147px; }
 
@@ -258,7 +258,7 @@ li.edit-mode .task-content:focus { outline: none; }
 
 .options .optionsBtn:hover, .options .deleteBtn:hover, .options .editBtn:hover {
   color: #414750;
-  background-color: #cbd0d6;
+  background-color: #ececec;
 }
 
 .optionsBtn i {
@@ -293,14 +293,27 @@ form input {
 
 form input:hover, form input:focus {
   outline: none;
-  border-bottom: 2px solid #adadad;
 }
 
 form button { display: none; }
 
+#add-btn {
+  height: 65px;
+  width: 65px;
+  padding: 18px;
+  position: fixed;
+  bottom: 35px;
+  right: 35px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+}
+#add-btn:focus { outline: none; }
+
+
 @media (min-width: 600px) {
   #todo-list li:hover:not(.removed), #todo-list li:focus:not(.removed) {
-    box-shadow: 1px 1px 10px 0px rgba(0, 0, 0, 0.25);
+    box-shadow: 1px 1px 10px 1px rgba(0, 0, 0, 0.2);
     background-image: url('images/halfFilledCircle.svg');
     border-bottom-color: transparent;
     border-radius: 8px;

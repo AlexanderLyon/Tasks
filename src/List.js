@@ -9,10 +9,12 @@ export class List extends React.Component {
       lastUpdated: null,
       taskList: [],
       removedList: [],
-      taskCount: 0
+      taskCount: 0,
+      addingTask: false
     };
 
     this.printTasks = this.printTasks.bind(this);
+    this.addBtnClick = this.addBtnClick.bind(this);
     this.addNewTask = this.addNewTask.bind(this);
     this.getLastUpdate = this.getLastUpdate.bind(this);
     this.updateList = this.updateList.bind(this);
@@ -190,6 +192,13 @@ export class List extends React.Component {
   }
 
 
+  addBtnClick() {
+    this.setState({
+      addingTask: true
+    });
+  }
+
+
   deleteFromDatabase(noteID) {
     let transaction = this.props.database.transaction(['notes'], 'readwrite');
     let objectStore = transaction.objectStore('notes');
@@ -267,6 +276,7 @@ export class List extends React.Component {
 
         this.setState({
           taskList: allEntries.result,
+          addingTask: false,
           taskCount: taskCount === 1 ? '1 task' : taskCount + ' tasks',
           lastUpdated: localStorage.getItem('lastUpdated')
         });
@@ -286,18 +296,26 @@ export class List extends React.Component {
           <h2 className={colorTheme}>Incomplete</h2>
         }
         {this.state.removedList.length > 0 &&
-          <button id="undoBtn" className={colorTheme} onClick={this.restoreTask}><i className="fas fa-undo-alt"></i> Undo</button>
+          <button id="undoBtn" className={colorTheme} onClick={this.restoreTask}>
+            <i className="fas fa-undo-alt"></i> Undo
+          </button>
         }
-        {this.state.lastUpdated &&
+        {(this.state.taskList.length > 0 && this.state.lastUpdated) &&
           <p className="last-updated">Last updated {this.getLastUpdate()}</p>
         }
         <ul id="todo-list">
           { this.printTasks() }
         </ul>
-        <form id="add-task" onSubmit={this.addNewTask}>
-          <input type="text" name="task" autoComplete="off" placeholder="Add something to your list..."/>
-          <button type="submit">Add</button>
-        </form>
+        {this.state.addingTask &&
+          <form id="add-task" onSubmit={this.addNewTask}>
+            <input type="text" autoFocus name="task" autoComplete="off" placeholder="Add something to your list..."/>
+            <button type="submit">Add</button>
+          </form>
+        }
+
+        <button id="add-btn" className={colorTheme} onClick={this.addBtnClick}>
+          <img src="images/plusWhite.svg" alt=""/>
+        </button>
       </div>
     );
   }
