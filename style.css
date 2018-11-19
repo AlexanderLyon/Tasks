@@ -151,7 +151,7 @@ h2.theme-grey, button.theme-grey { color: #414750; }
 #todo-list li {
   position: relative;
   margin: 14px 0px;
-  padding: 8px 45px 8px 22px;
+  padding: 8px 45px 8px 24px;
   height: 47px;
   line-height: 31px;
   font-weight: 600;
@@ -169,7 +169,7 @@ h2.theme-grey, button.theme-grey { color: #414750; }
   background-repeat: no-repeat;
   background-size: 19px 19px;
   background-position-y: center;
-  background-position-x: 6px;
+  background-position-x: 8px;
 }
 
 #todo-list li:hover:not(.removed), #todo-list li:focus:not(.removed) {
@@ -187,6 +187,8 @@ h2.theme-grey, button.theme-grey { color: #414750; }
 
 #todo-list .options-open .task-content {
   max-width: calc(100% - 130px);
+  overflow-x: scroll;
+  text-overflow: unset;
 }
 
 #todo-list li.removed {
@@ -216,6 +218,7 @@ li.edit-mode .task-content:focus { outline: none; }
   top: 0px;
   width: 35px;
   height: 100%;
+  background-color: #FFFFFF;
 }
 .options-open .options { width: 147px; }
 
@@ -298,12 +301,12 @@ form input:hover, form input:focus {
 form button { display: none; }
 
 #add-btn {
-  height: 65px;
-  width: 65px;
+  height: 58px;
+  width: 58px;
   padding: 18px;
   position: fixed;
-  bottom: 35px;
-  right: 35px;
+  bottom: 40px;
+  right: 28px;
   border: none;
   border-radius: 50px;
   cursor: pointer;
@@ -318,4 +321,6 @@ form button { display: none; }
     border-bottom-color: transparent;
     border-radius: 8px;
   }
+
+  #add-btn:hover { opacity: 0.85; }
 }

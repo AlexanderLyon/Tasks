@@ -16,6 +16,7 @@ export class List extends React.Component {
     this.printTasks = this.printTasks.bind(this);
     this.addBtnClick = this.addBtnClick.bind(this);
     this.addNewTask = this.addNewTask.bind(this);
+    this.formBlur = this.formBlur.bind(this);
     this.getLastUpdate = this.getLastUpdate.bind(this);
     this.updateList = this.updateList.bind(this);
     this.crossOff = this.crossOff.bind(this);
@@ -90,11 +91,11 @@ export class List extends React.Component {
     if (options.querySelector('.optionsBtn').contains(element)) {
       if (open) {
         // Close options menu
-        options.classList.remove('options-open');
+        taskEl.classList.remove('options-open');
       }
       else {
         // Open options menu
-        options.classList.add('options-open');
+        taskEl.classList.add('options-open');
       }
     }
     else if (options.querySelector('.editBtn').contains(element)) {
@@ -140,8 +141,8 @@ export class List extends React.Component {
     const element = e.currentTarget;
 
     if (element.classList.contains('options')) {
-      const open = element.classList.contains('options-open') ? true : false;
       const taskEl = element.parentElement;
+      const open = taskEl.classList.contains('options-open') ? true : false;
       this.optionsClick(element, taskEl, e.target, open);
     }
     else if (element.classList.contains('edit-mode')) {
@@ -196,6 +197,13 @@ export class List extends React.Component {
     this.setState({
       addingTask: true
     });
+  }
+
+
+  formBlur(e) {
+    if (this.state.taskList.length > 0) {
+      this.setState({ addingTask: false });
+    }
   }
 
 
@@ -306,9 +314,12 @@ export class List extends React.Component {
         <ul id="todo-list">
           { this.printTasks() }
         </ul>
-        {this.state.addingTask &&
+        {(this.state.addingTask || !this.state.taskList.length) &&
           <form id="add-task" onSubmit={this.addNewTask}>
-            <input type="text" autoFocus name="task" autoComplete="off" placeholder="Add something to your list..."/>
+            <input type="text" name="task" autoComplete="off"
+              autoFocus
+              onBlur={this.formBlur}
+              placeholder="Add something to your list..."/>
             <button type="submit">Add</button>
           </form>
         }
