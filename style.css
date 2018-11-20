@@ -197,7 +197,7 @@ h2.theme-grey, button.theme-grey { color: #414750; }
 
 #todo-list li.removed .task-content {
   text-decoration: line-through;
-  color: #a5a4a7;
+  color: #c5c5c5;
 }
 
 #todo-list li.edit-mode {
@@ -227,7 +227,7 @@ li.edit-mode .task-content:focus { outline: none; }
   top: 6px;
   border-radius: 50%;
   background-color: transparent;
-  color: #a5a4a7;
+  color: #c5c5c5;
   height: 35px;
   width: 35px;
   line-height: 35px;
