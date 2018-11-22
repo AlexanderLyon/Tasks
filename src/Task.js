@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { CSSTransitionGroup } from 'react-transition-group';
 
 export class Task extends React.Component {
   constructor(props) {
@@ -131,18 +132,21 @@ export class Task extends React.Component {
 
   render() {
     return (
-      <li
-        onClick={this.handleClick}
-        onKeyDown={this.taskKeydown}
-        onKeyUp={this.taskKeyup}
-        data-note-id={this.props.entryID}>
-        <span className='task-content'>{this.props.entryBody}</span>
-        <span className='options' onClick={this.handleClick}>
-          <span className='editBtn'><i className='fas fa-pencil-alt'></i></span>
-          <span className='deleteBtn'><i className='fas fa-trash'></i></span>
-          <span className='optionsBtn'><i className='fas fa-ellipsis-v'></i></span>
-        </span>
-     </li>
+      <CSSTransitionGroup transitionName="slideDown"
+      transitionEnterTimeout={500}
+      transitionLeaveTimeout={500}>
+        <li data-note-id={this.props.entryID}
+          onClick={this.handleClick}
+          onKeyDown={this.taskKeydown}
+          onKeyUp={this.taskKeyup} >
+          <span className='task-content'>{this.props.entryBody}</span>
+          <span className='options' onClick={this.handleClick}>
+            <span className='editBtn'><i className='fas fa-pencil-alt'></i></span>
+            <span className='deleteBtn'><i className='fas fa-trash'></i></span>
+            <span className='optionsBtn'><i className='fas fa-ellipsis-v'></i></span>
+          </span>
+        </li>
+      </CSSTransitionGroup>
     );
   }
 

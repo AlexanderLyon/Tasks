@@ -123,7 +123,9 @@ export class App extends React.Component {
           <h1 contentEditable id="list-title" onKeyUp={this.updateListName}>{this.state.listTitle}</h1>
           <p id="task-count">{this.state.taskCount}</p>
           <div id="controls">
-            <button id="menuBtn" onClick={this.menuBtnClick}><i className="fas fa-cog"></i></button>
+            <button id="menuBtn" onClick={this.menuBtnClick}>
+              <img src="images/menuIcon.svg" alt=""/>
+            </button>
           </div>
         </header>
 

@@ -34,7 +34,7 @@ main {
   width: 100%;
   height: auto;
   min-height: 100vh;
-  padding-bottom: 50px;
+  padding-bottom: 115px;
   background-color: #f7f7f7;
   transition: all 200ms ease-in-out;
 }
@@ -49,6 +49,7 @@ aside {
   height: 100%;
   padding: 10px 25px;
   color: white;
+  z-index: 900;
   transition: all 200ms ease-in-out;
 }
 
@@ -105,8 +106,9 @@ h2.theme-grey, button.theme-grey { color: #414750; }
   color: white;
 }
 #menuBtn {
-  top: 10px;
-  font-size: 25px;
+  top: 14px;
+  height: 40px;
+  width: 40px;
 }
 
 #content {
@@ -252,6 +254,26 @@ li.edit-mode .task-content:focus { outline: none; }
 .options .deleteBtn { right: 57px; }
 .options .editBtn { right: 107px; }
 
+/*======================= Animations =======================*/
+.slideDown-enter {
+  transform-origin: center top;
+  transform: scaleY(0);
+}
+.slideDown-enter.slideDown-enter-active {
+  transform-origin: center top;
+  transform: scaleY(1);
+	transition-duration: 500ms;
+}
+.slideDown-leave {
+  transform-origin: center top;
+  transform: scaleY(1);
+}
+.slideDown-leave.slideDown-leave-active {
+  transform-origin: center top;
+  transform: scaleY(0);
+	transition-duration: 500ms;
+}
+
 @keyframes slide-in {
   100% { transform: translateX(0%); }
 }
@@ -310,6 +332,7 @@ form button { display: none; }
   border: none;
   border-radius: 50px;
   cursor: pointer;
+  z-index: 500;
 }
 #add-btn:focus { outline: none; }
 

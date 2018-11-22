@@ -75,7 +75,7 @@ export class List extends React.Component {
 
 
   formBlur(e) {
-    if (this.state.taskList.length > 0) {
+    if (this.state.taskList.length > 0 && e.currentTarget.value.length === 0) {
       this.setState({ addingTask: false });
     }
   }
