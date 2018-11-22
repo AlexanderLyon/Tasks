@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { CSSTransitionGroup } from 'react-transition-group';
 
 export class Task extends React.Component {
   constructor(props) {
@@ -120,33 +119,33 @@ export class Task extends React.Component {
 
 
   crossOff(el) {
-    /* Removes completed task from list */
+    /* Animates then removes completed task from list */
     el.classList.add('removed');
 
     window.setTimeout(() => {
-      this.props.removeTask(el);
-      el.classList.remove('removed');
+      el.style.animation = 'task-exit 0.5s ease-out';
+
+      window.setTimeout(() => {
+        this.props.removeTask(el);
+      }, 500);
+
     }, 1800);
   }
 
 
   render() {
     return (
-      <CSSTransitionGroup transitionName="slideDown"
-      transitionEnterTimeout={500}
-      transitionLeaveTimeout={500}>
-        <li data-note-id={this.props.entryID}
-          onClick={this.handleClick}
-          onKeyDown={this.taskKeydown}
-          onKeyUp={this.taskKeyup} >
-          <span className='task-content'>{this.props.entryBody}</span>
-          <span className='options' onClick={this.handleClick}>
-            <span className='editBtn'><i className='fas fa-pencil-alt'></i></span>
-            <span className='deleteBtn'><i className='fas fa-trash'></i></span>
-            <span className='optionsBtn'><i className='fas fa-ellipsis-v'></i></span>
-          </span>
-        </li>
-      </CSSTransitionGroup>
+      <li data-note-id={this.props.entryID}
+        onClick={this.handleClick}
+        onKeyDown={this.taskKeydown}
+        onKeyUp={this.taskKeyup} >
+        <span className='task-content'>{this.props.entryBody}</span>
+        <span className='options' onClick={this.handleClick}>
+          <span className='editBtn'><i className='fas fa-pencil-alt'></i></span>
+          <span className='deleteBtn'><i className='fas fa-trash'></i></span>
+          <span className='optionsBtn'><i className='fas fa-ellipsis-v'></i></span>
+        </span>
+      </li>
     );
   }
 
