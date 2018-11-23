@@ -119,6 +119,7 @@ export class App extends React.Component {
 
     return (
       <div>
+        <div id="buffer" className={colorTheme}></div>
         <header className={colorTheme}>
           <h1 contentEditable id="list-title" onKeyUp={this.updateListName}>{this.state.listTitle}</h1>
           <p id="task-count">{this.state.taskCount}</p>

@@ -10,6 +10,16 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+#buffer {
+  position: fixed;
+  top: -45px;
+  left: 0px;
+  width: 100%;
+  height: 45px;
+  z-index: 999;
+  background-color: #0d8c80;
+}
+
 header {
   position: relative;
   width: 100%;
@@ -71,15 +81,15 @@ aside {
   cursor: pointer;
 }
 
-div[data-color="teal"], .theme-teal:not(h2) { background-color: #0d8c80; }
+div[data-color="teal"], .theme-teal:not(h2), #buffer.theme-teal { background-color: #0d8c80; }
 h2.theme-teal, button.theme-teal { color: #0d8c80; }
-div[data-color="blue"], .theme-blue:not(h2) { background-color: #206c8a; }
+div[data-color="blue"], .theme-blue:not(h2), #buffer.theme-blue { background-color: #206c8a; }
 h2.theme-blue, button.theme-blue { color: #206c8a; }
-div[data-color="lavender"], .theme-lavender:not(h2) { background-color: #996aa2; }
+div[data-color="lavender"], .theme-lavender:not(h2), #buffer.theme-lavendar { background-color: #996aa2; }
 h2.theme-lavender, button.theme-lavender { color: #996aa2; }
-div[data-color="blush"], .theme-blush:not(h2) { background-color: #ce8e91; }
+div[data-color="blush"], .theme-blush:not(h2), #buffer.theme-blush { background-color: #ce8e91; }
 h2.theme-blush, button.theme-blush { color: #ce8e91; }
-div[data-color="grey"], .theme-grey:not(h2) { background-color: #414750; }
+div[data-color="grey"], .theme-grey:not(h2), #buffer.theme-grey { background-color: #414750; }
 h2.theme-grey, button.theme-grey { color: #414750; }
 
 #controls {
