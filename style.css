@@ -178,11 +178,6 @@ h2.theme-grey, button.theme-grey { color: #414750; }
   color: #555555;
   transition: 200ms;
   background-color: #FFFFFF;
-  background-image: url('images/openCircle.svg');
-  background-repeat: no-repeat;
-  background-size: 19px 19px;
-  background-position-y: center;
-  background-position-x: 8px;
   -webkit-animation: task-enter 0.6s ease-in-out;
   animation: task-enter 0.6s ease-in-out;
 }
@@ -190,6 +185,19 @@ h2.theme-grey, button.theme-grey { color: #414750; }
 #todo-list li:hover:not(.removed), #todo-list li:focus:not(.removed) {
   cursor: pointer;
   z-index: 499;
+}
+
+li .icon {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 47px;
+  width: 47px;
+  background-image: url('images/backgroundIcons.svg');
+  background-repeat: no-repeat;
+  background-size: 19px;
+  background-position-y: 14px;
+  background-position-x: 8px;
 }
 
 li ::-webkit-scrollbar {
@@ -210,8 +218,8 @@ li ::-webkit-scrollbar {
   text-overflow: unset;
 }
 
-#todo-list li.removed {
-  background-image: url('images/check.svg');
+#todo-list li.removed .icon {
+  background-position-y: -57px;
 }
 
 #todo-list li.removed .task-content {
@@ -380,9 +388,12 @@ form button { display: none; }
 @media (min-width: 600px) {
   #todo-list li:hover:not(.removed), #todo-list li:focus:not(.removed) {
     box-shadow: 1px 1px 10px 1px rgba(0, 0, 0, 0.2);
-    background-image: url('images/halfFilledCircle.svg');
     border-bottom-color: transparent;
     border-radius: 8px;
+  }
+
+  #todo-list li:hover:not(.removed) .icon, #todo-list li:focus:not(.removed) .icon {
+    background-position-y: -21px;
   }
 
   #add-btn:hover { opacity: 0.85; }
