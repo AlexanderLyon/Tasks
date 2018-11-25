@@ -6,7 +6,6 @@ export class List extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      title: 'New List',
       lastUpdated: null,
       taskList: [],
       removedList: [],

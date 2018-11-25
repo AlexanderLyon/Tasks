@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Menu } from './Menu';
+import { ListView } from './ListView';
 import { List } from './List';
 
 export class App extends React.Component {
@@ -17,6 +18,7 @@ export class App extends React.Component {
     this.updateTaskCount = this.updateTaskCount.bind(this);
     this.updateListName = this.updateListName.bind(this);
     this.setTheme = this.setTheme.bind(this);
+    this.addNewList = this.addNewList.bind(this);
   }
 
   loadDatabase() {
@@ -48,6 +50,32 @@ export class App extends React.Component {
 
     };
   }
+
+
+  addNewList() {
+    let request = window.indexedDB.open('NotesData', 1);
+
+    request.onsuccess = (event) => {
+      let db = request.result;
+
+      request.onupgradeneeded = (e) => {
+        if (!db.objectStoreNames.contains('New List')) {
+          let objectStore = db.createObjectStore('New List', {keyPath: 'id', autoIncrement: true});
+          objectStore.createIndex('body', 'body', {unique: false});
+        }
+        else {
+          console.error('List with that name already exists');
+        }
+
+        setTimeout(() => {
+          this.setState({ database: db }, () => {
+            console.log('New table created');
+          });
+        }, 3000);
+      }
+    };
+  }
+
 
   setTheme(color) {
     color = color.toLowerCase();
@@ -101,6 +129,11 @@ export class App extends React.Component {
   }
 
 
+  componentWillMount() {
+    // Initial load, select first list
+  }
+
+
   componentDidMount() {
     this.loadDatabase();
 
@@ -131,10 +164,12 @@ export class App extends React.Component {
         </header>
 
         <section id="content">
+          <ListView database={this.state.database} addNew={this.addNewList}/>
           { this.state.database &&
             <List
               updateTaskCount={this.updateTaskCount}
               colorTheme={this.state.colorTheme}
+              listTitle={'New List'}
               database={this.state.database}
             />
           }

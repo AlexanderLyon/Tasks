@@ -39,6 +39,10 @@ header p {
   color: white;
 }
 
+::-webkit-scrollbar {
+  background: transparent;
+}
+
 main {
   position: relative;
   width: 100%;
@@ -128,6 +132,31 @@ h2.theme-grey, button.theme-grey { color: #414750; }
   margin: 20px auto 0px auto;
 }
 
+#list-view ul {
+  list-style: none;
+  white-space: nowrap;
+  overflow-x: scroll;
+}
+#list-view li {
+  display: inline-block;
+  margin-right: 20px;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 100px;
+  height: 100px;
+  width: 100px;
+  color: #555555;
+  font-weight: bold;
+  background-color: #FFFFFF;
+  border-radius: 6px;
+  cursor: pointer;
+}
+#list-view li img {
+  height: 35%;
+  width: 35%;
+  vertical-align: middle;
+}
+
 .list h2 {
   display: inline-block;
   font-weight: bold;
@@ -149,7 +178,7 @@ h2.theme-grey, button.theme-grey { color: #414750; }
 }
 
 .list {
-  margin-top: 30px;
+  margin-top: 0px;
 }
 
 #todo-list {
@@ -198,10 +227,6 @@ li .icon {
   background-size: 19px;
   background-position-y: 14px;
   background-position-x: 8px;
-}
-
-li ::-webkit-scrollbar {
-  background: transparent;
 }
 
 #todo-list .task-content {
