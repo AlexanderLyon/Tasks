@@ -52,8 +52,8 @@ export class Task extends React.Component {
     const el = e.currentTarget;
     let newText = el.innerText;
     let key = el.getAttribute('data-note-id');
-    let transaction = this.props.database.transaction(['notes'], 'readwrite');
-    let objectStore = transaction.objectStore('notes');
+    let transaction = this.props.database.transaction([this.props.listTitle], 'readwrite');
+    let objectStore = transaction.objectStore(this.props.listTitle);
 
     objectStore.openCursor().onsuccess = (event) => {
       const cursor = event.target.result;

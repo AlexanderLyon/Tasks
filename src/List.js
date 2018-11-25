@@ -23,6 +23,7 @@ export class List extends React.Component {
     this.deleteFromDatabase = this.deleteFromDatabase.bind(this);
   }
 
+
   addNewTask(e, text) {
     let enteredText;
     let form;
@@ -39,8 +40,8 @@ export class List extends React.Component {
     if (enteredText.trim().length > 0) {
       // Add to database:
       let newNote = {body: enteredText};
-      let transaction = this.props.database.transaction(['notes'], 'readwrite');
-      let objectStore = transaction.objectStore('notes');
+      let transaction = this.props.database.transaction([this.props.listTitle], 'readwrite');
+      let objectStore = transaction.objectStore(this.props.listTitle);
       let request = objectStore.add(newNote);
 
       transaction.oncomplete = () => {
@@ -86,8 +87,8 @@ export class List extends React.Component {
     this.setState({ removedList: arr });
 
     const noteID = Number(el.getAttribute('data-note-id'));
-    let transaction = this.props.database.transaction(['notes'], 'readwrite');
-    let objectStore = transaction.objectStore('notes');
+    let transaction = this.props.database.transaction([this.props.listTitle], 'readwrite');
+    let objectStore = transaction.objectStore(this.props.listTitle);
     let request = objectStore.delete(noteID);
 
     transaction.oncomplete = () => {
@@ -102,6 +103,7 @@ export class List extends React.Component {
       return (
         <Task entryID={entry.id} entryBody={entry.body} key={entry.id}
           database={this.props.database}
+          listTitle={this.props.listTitle}
           removeTask={this.deleteFromDatabase}
         />
       );
@@ -114,6 +116,13 @@ export class List extends React.Component {
   componentWillMount() {
     // Load saved Tasks on initial load
     this.updateList();
+  }
+
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.listTitle != prevProps.listTitle) {
+      this.updateList();
+    }
   }
 
 
@@ -141,7 +150,7 @@ export class List extends React.Component {
 
   updateList(changeMade) {
     // Get up-to-date list from database
-    let objectStore = this.props.database.transaction('notes').objectStore('notes');
+    let objectStore = this.props.database.transaction(this.props.listTitle).objectStore(this.props.listTitle);
     let allEntries = objectStore.getAll();
 
     allEntries.onsuccess = () => {

@@ -9,7 +9,8 @@ export class App extends React.Component {
     super(props);
     this.state = {
       database: null,
-      listTitle: "To-Do List",
+      dbVersion: null,
+      currentList: null,
       taskCount: 0,
       colorTheme: 'teal'
     };
@@ -17,19 +18,25 @@ export class App extends React.Component {
     this.loadDatabase = this.loadDatabase.bind(this);
     this.updateTaskCount = this.updateTaskCount.bind(this);
     this.updateListName = this.updateListName.bind(this);
+    this.switchList = this.switchList.bind(this);
     this.setTheme = this.setTheme.bind(this);
     this.addNewList = this.addNewList.bind(this);
   }
 
+
   loadDatabase() {
-    let request = window.indexedDB.open('NotesData', 1);
+    let request = window.indexedDB.open('NotesData');
 
     request.onerror = () => {
       console.error('Database failed to open');
     };
 
     request.onsuccess = () => {
-      this.setState({ database: request.result }, () => {
+      this.setState({
+        database: request.result,
+        dbVersion: request.result.version,
+        currentList: request.result.objectStoreNames[0]
+      }, () => {
         console.log('Database loaded successfully');
       });
     };
@@ -37,13 +44,17 @@ export class App extends React.Component {
     request.onupgradeneeded = (e) => {
       let db = e.target.result;
 
-      if (!db.objectStoreNames.contains('notes')) {
-        let objectStore = db.createObjectStore('notes', {keyPath: 'id', autoIncrement: true});
+      if (!db.objectStoreNames.contains('New List')) {
+        let objectStore = db.createObjectStore('New List', {keyPath: 'id', autoIncrement: true});
         objectStore.createIndex('body', 'body', {unique: false});
       }
 
       setTimeout(() => {
-        this.setState({ database: db }, () => {
+        this.setState({
+          database: db,
+          dbVersion: db.version,
+          currentList: db.objectStoreNames[0]
+        }, () => {
           console.log('Database created');
         });
       }, 3000);
@@ -53,27 +64,37 @@ export class App extends React.Component {
 
 
   addNewList() {
-    let request = window.indexedDB.open('NotesData', 1);
+    this.state.database.close();
+    let request = window.indexedDB.open('NotesData', this.state.dbVersion+1);
 
-    request.onsuccess = (event) => {
-      let db = request.result;
+    request.onsuccess = (e) => {
+      const db = e.target.result;
+      this.setState({
+        database: db,
+        dbVersion: this.state.dbVersion+1,
+        currentList: 'New List'
+      }, () => {
+        console.log('New table created');
+      });
+    };
 
-      request.onupgradeneeded = (e) => {
-        if (!db.objectStoreNames.contains('New List')) {
-          let objectStore = db.createObjectStore('New List', {keyPath: 'id', autoIncrement: true});
-          objectStore.createIndex('body', 'body', {unique: false});
-        }
-        else {
-          console.error('List with that name already exists');
-        }
-
-        setTimeout(() => {
-          this.setState({ database: db }, () => {
-            console.log('New table created');
-          });
-        }, 3000);
+    request.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('New List')) {
+        let objectStore = db.createObjectStore('New List', {keyPath: 'id', autoIncrement: true});
+        objectStore.createIndex('body', 'body', {unique: false});
+      }
+      else {
+        console.error('List with that name already exists');
       }
     };
+  }
+
+
+  switchList(e) {
+    this.setState({
+      currentList: e.currentTarget.innerText
+    });
   }
 
 
@@ -111,14 +132,33 @@ export class App extends React.Component {
 
 
   updateListName(e) {
+    let newTitle;
     if (e.target.innerText.trim().length > 0) {
-      const newTitle = e.target.innerText.charAt(0).toUpperCase() + e.target.innerText.substr(1);
-      localStorage.setItem('listTitle', newTitle);
+      newTitle = e.target.innerText.charAt(0).toUpperCase() + e.target.innerText.substr(1);
     }
     else {
       // Empty field
-      localStorage.setItem('listTitle', 'New List');
+      newTitle = 'New List';
     }
+
+    // Rename object store in database
+    this.state.database.close();
+    let request = window.indexedDB.open('NotesData', this.state.dbVersion+1);
+
+    request.onsuccess = (event) => {
+      const db = event.target.result;
+      this.setState({
+        database: db,
+        dbVersion: this.state.dbVersion+1
+      });
+    };
+
+    request.onupgradeneeded = (e) => {
+      const db = event.target.result;
+      const transaction = event.target.transaction;
+      transaction.objectStore(this.state.currentList).name = newTitle;
+    };
+
   }
 
 
@@ -139,8 +179,7 @@ export class App extends React.Component {
 
     // Settings
     this.setState({
-      colorTheme: localStorage.getItem('colorTheme') ? localStorage.getItem('colorTheme') : 'teal',
-      listTitle: localStorage.getItem('listTitle') ? localStorage.getItem('listTitle') : 'To Do List'
+      colorTheme: localStorage.getItem('colorTheme') ? localStorage.getItem('colorTheme') : 'teal'
     }, () => {
       // Set color theme:
       this.setTheme(this.state.colorTheme);
@@ -154,7 +193,7 @@ export class App extends React.Component {
       <div>
         <div id="buffer" className={colorTheme}></div>
         <header className={colorTheme}>
-          <h1 contentEditable id="list-title" onKeyUp={this.updateListName}>{this.state.listTitle}</h1>
+          <h1 contentEditable id="list-title" onBlur={this.updateListName}>{this.state.currentList}</h1>
           <p id="task-count">{this.state.taskCount}</p>
           <div id="controls">
             <button id="menuBtn" onClick={this.menuBtnClick}>
@@ -164,12 +203,12 @@ export class App extends React.Component {
         </header>
 
         <section id="content">
-          <ListView database={this.state.database} addNew={this.addNewList}/>
+          <ListView database={this.state.database} addNew={this.addNewList} switchList={this.switchList}/>
           { this.state.database &&
             <List
               updateTaskCount={this.updateTaskCount}
               colorTheme={this.state.colorTheme}
-              listTitle={'New List'}
+              listTitle={this.state.currentList}
               database={this.state.database}
             />
           }
