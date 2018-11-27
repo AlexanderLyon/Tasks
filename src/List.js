@@ -150,29 +150,37 @@ export class List extends React.Component {
 
   updateList(changeMade) {
     // Get up-to-date list from database
-    let objectStore = this.props.database.transaction(this.props.listTitle).objectStore(this.props.listTitle);
-    let allEntries = objectStore.getAll();
 
-    allEntries.onsuccess = () => {
-      let countRequest = objectStore.count();
+    if (this.props.database.objectStoreNames[0]) {
+      let objectStore = this.props.database.transaction(this.props.listTitle).objectStore(this.props.listTitle);
+      let allEntries = objectStore.getAll();
 
-      countRequest.onsuccess = () => {
-        const taskCount = countRequest.result;
+      allEntries.onsuccess = () => {
+        let countRequest = objectStore.count();
 
-        if (changeMade) {
-          localStorage.setItem('lastUpdated', new Date());
-        }
+        countRequest.onsuccess = () => {
+          const taskCount = countRequest.result;
 
-        this.setState({
-          taskList: allEntries.result,
-          addingTask: false,
-          taskCount: taskCount === 1 ? '1 task' : taskCount + ' tasks',
-          lastUpdated: localStorage.getItem('lastUpdated')
-        });
+          if (changeMade) {
+            localStorage.setItem('lastUpdated', new Date());
+          }
 
-        this.props.updateTaskCount(this.state.taskCount);
+          this.setState({
+            taskList: allEntries.result,
+            addingTask: false,
+            taskCount: taskCount === 1 ? '1 task' : taskCount + ' tasks',
+            lastUpdated: localStorage.getItem('lastUpdated')
+          });
+
+          this.props.updateTaskCount(this.state.taskCount);
+        };
       };
-    };
+    }
+    else {
+      // No lists found, create a 'New List'
+      this.props.addNewList();
+    }
+
   }
 
 

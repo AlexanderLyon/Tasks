@@ -27,6 +27,11 @@ export class Menu extends React.Component {
           <div onClick={this.handleColorClick} data-color="blush"></div>
           <div onClick={this.handleColorClick} data-color="grey"></div>
         </div>
+        <div id="settings">
+          <button id="delete-list" onClick={this.props.deleteList}>
+            Delete this list
+          </button>
+        </div>
       </aside>
     );
   }

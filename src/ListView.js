@@ -14,7 +14,12 @@ export class ListView extends React.Component {
       const tableNames = this.props.database.objectStoreNames;
       const lists = Object.keys(tableNames).map(i => {
         const name = tableNames[i].charAt(0).toUpperCase() + tableNames[i].substr(1);
-        return <li onClick={this.props.switchList}>{name}</li>;
+
+        return (
+          <li className={name == this.props.currentList ? this.props.colorTheme: ''} onClick={this.props.switchList}>
+            {name}
+          </li>
+        );
       });
 
       // 'Add a list' button

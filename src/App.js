@@ -19,6 +19,7 @@ export class App extends React.Component {
     this.updateTaskCount = this.updateTaskCount.bind(this);
     this.updateListName = this.updateListName.bind(this);
     this.switchList = this.switchList.bind(this);
+    this.deleteList = this.deleteList.bind(this);
     this.setTheme = this.setTheme.bind(this);
     this.addNewList = this.addNewList.bind(this);
   }
@@ -98,6 +99,33 @@ export class App extends React.Component {
   }
 
 
+  deleteList() {
+    let confirmation = confirm('Are you sure you want to delete list "' + this.state.currentList + '"?');
+
+    if (confirmation) {
+      this.state.database.close();
+      let request = window.indexedDB.open('NotesData', this.state.dbVersion+1);
+
+      request.onsuccess = (e) => {
+        const db = e.target.result;
+        this.setState({
+          database: db,
+          dbVersion: this.state.dbVersion+1,
+          currentList: db.objectStoreNames[0]
+        }, () => {
+          console.log('List successfully deleted');
+        });
+      };
+
+      request.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        db.deleteObjectStore(this.state.currentList);
+      };
+    }
+
+  }
+
+
   setTheme(color) {
     color = color.toLowerCase();
     localStorage.setItem('colorTheme', color);
@@ -169,11 +197,6 @@ export class App extends React.Component {
   }
 
 
-  componentWillMount() {
-    // Initial load, select first list
-  }
-
-
   componentDidMount() {
     this.loadDatabase();
 
@@ -203,9 +226,15 @@ export class App extends React.Component {
         </header>
 
         <section id="content">
-          <ListView database={this.state.database} addNew={this.addNewList} switchList={this.switchList}/>
+          <ListView database={this.state.database}
+            colorTheme={colorTheme}
+            currentList={this.state.currentList}
+            addNew={this.addNewList}
+            switchList={this.switchList}
+          />
           { this.state.database &&
             <List
+              addNewList={this.addNewList}
               updateTaskCount={this.updateTaskCount}
               colorTheme={this.state.colorTheme}
               listTitle={this.state.currentList}
@@ -214,7 +243,10 @@ export class App extends React.Component {
           }
         </section>
 
-        <Menu colorTheme={this.state.colorTheme} setTheme={this.setTheme}/>
+        <Menu colorTheme={this.state.colorTheme}
+          deleteList={this.deleteList}
+          setTheme={this.setTheme}
+        />
       </div>
     );
   }
