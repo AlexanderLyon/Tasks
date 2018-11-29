@@ -18,6 +18,7 @@ export class App extends React.Component {
     this.loadDatabase = this.loadDatabase.bind(this);
     this.updateTaskCount = this.updateTaskCount.bind(this);
     this.updateListName = this.updateListName.bind(this);
+    this.titleKeydown = this.titleKeydown.bind(this);
     this.switchList = this.switchList.bind(this);
     this.deleteList = this.deleteList.bind(this);
     this.setTheme = this.setTheme.bind(this);
@@ -159,6 +160,14 @@ export class App extends React.Component {
   }
 
 
+  titleKeydown(e) {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      e.currentTarget.blur();
+    }
+  }
+
+
   updateListName(e) {
     let newTitle;
     if (e.target.innerText.trim().length > 0) {
@@ -177,7 +186,8 @@ export class App extends React.Component {
       const db = event.target.result;
       this.setState({
         database: db,
-        dbVersion: this.state.dbVersion+1
+        dbVersion: this.state.dbVersion+1,
+        currentList: newTitle
       });
     };
 
@@ -216,7 +226,11 @@ export class App extends React.Component {
       <div>
         <div id="buffer" className={colorTheme}></div>
         <header className={colorTheme}>
-          <h1 contentEditable id="list-title" onBlur={this.updateListName}>{this.state.currentList}</h1>
+          <h1 contentEditable id="list-title"
+            onKeyDown={this.titleKeydown}
+            onBlur={this.updateListName}>
+              {this.state.currentList}
+          </h1>
           <p id="task-count">{this.state.taskCount}</p>
           <div id="controls">
             <button id="menuBtn" onClick={this.menuBtnClick}>
