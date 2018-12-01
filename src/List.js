@@ -200,7 +200,7 @@ export class List extends React.Component {
         {(this.state.taskList.length > 0 && this.state.lastUpdated) &&
           <p className="last-updated">Last updated {this.getLastUpdate()}</p>
         }
-        <ul id="todo-list">
+        <ul>
           { this.printTasks() }
         </ul>
         {(this.state.addingTask || !this.state.taskList.length) &&

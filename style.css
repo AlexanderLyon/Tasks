@@ -217,7 +217,7 @@ h2.theme-grey, button.theme-grey { color: #414750; }
   opacity: 0.6;
 }
 
-#todo-list {
+.list ul {
   list-style: none;
   padding-left: 0px;
 }
@@ -226,7 +226,7 @@ h2.theme-grey, button.theme-grey { color: #414750; }
   color: #939294;
 }
 
-#todo-list li {
+.list ul li {
   position: relative;
   margin: 14px 0px;
   padding: 8px 45px 8px 24px;
@@ -247,7 +247,7 @@ h2.theme-grey, button.theme-grey { color: #414750; }
   animation: task-enter 0.6s ease-in-out;
 }
 
-#todo-list li:hover:not(.removed), #todo-list li:focus:not(.removed) {
+.list li:hover:not(.removed), .list li:focus:not(.removed) {
   cursor: pointer;
   z-index: 499;
 }
@@ -265,7 +265,7 @@ li .icon {
   background-position-x: 8px;
 }
 
-#todo-list .task-content {
+.list ul .task-content {
   display: block;
   margin-left: 11px;
   max-width: 100%;
@@ -273,22 +273,22 @@ li .icon {
   text-overflow: ellipsis;
 }
 
-#todo-list .options-open .task-content {
+.list .options-open .task-content {
   max-width: calc(100% - 130px);
   overflow-x: scroll;
   text-overflow: unset;
 }
 
-#todo-list li.removed .icon {
+.list li.removed .icon {
   background-position-y: -57px;
 }
 
-#todo-list li.removed .task-content {
+.list li.removed .task-content {
   text-decoration: line-through;
   color: #c5c5c5;
 }
 
-#todo-list li.edit-mode {
+.list li.edit-mode {
   background-color: #f0f3f7;
   box-shadow: 1px 1px 10px 0px rgba(0, 0, 0, 0.3);
   border: none;
@@ -359,6 +359,27 @@ li.edit-mode .task-content:focus { outline: none; }
   100% {
     opacity: 1;
     -webkit-transform: translateX(0%);
+  }
+}
+
+@keyframes task-slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+}
+@-webkit-keyframes task-slideUp {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateY(40%);
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: translateY(0%);
   }
 }
 
@@ -447,14 +468,51 @@ form button { display: none; }
 
 
 /** Desktop **/
-@media (min-width: 600px) {
-  #todo-list li:hover:not(.removed), #todo-list li:focus:not(.removed) {
+@media (min-width: 800px) {
+  #content {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    width: 85%;
+  }
+  #list-view {
+    display: inline-block;
+    margin-right: 5%;
+    float: left;
+    width: 35%;
+    height: 100%;
+  }
+  #list-view ul {
+    grid-template-columns: minmax(90px, 45%) minmax(90px, 45%);
+    grid-template-rows: repeat(auto-fill, 90px);
+    grid-auto-flow: row;
+    grid-gap: 22px 5%;
+    height: auto;
+    overflow: visible;
+  }
+  #list-view ul li {
+    width: 100%;
+    transition: 200ms;
+  }
+  #list-view ul li:not([class^="theme"]):hover {
+    box-shadow: 1px 1px 10px 1px rgba(0, 0, 0, 0.2);
+  }
+  .list {
+    display: inline-block;
+    width: 60%;
+    max-width: 950px;
+  }
+  .list ul li {
+    -webkit-animation: task-slideUp 0.7s ease;
+    animation: task-slideUp 0.7s ease;
+  }
+  .list li:hover:not(.removed), .list li:focus:not(.removed) {
     box-shadow: 1px 1px 10px 1px rgba(0, 0, 0, 0.2);
     border-bottom-color: transparent;
     border-radius: 8px;
   }
 
-  #todo-list li:hover:not(.removed) .icon, #todo-list li:focus:not(.removed) .icon {
+  .list li:hover:not(.removed) .icon, .list li:focus:not(.removed) .icon {
     background-position-y: -21px;
   }
 
@@ -463,7 +521,7 @@ form button { display: none; }
 
 
 /** Mobile **/
-@media (max-width: 599px) {
+@media (max-width: 799px) {
   #list-view {
     margin-left: -6%;
     margin-right: -6%;
