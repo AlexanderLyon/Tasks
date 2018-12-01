@@ -153,28 +153,30 @@ h2.theme-grey, button.theme-grey { color: #414750; }
 #content {
   width: 600px;
   max-width: 90%;
-  margin: 11px auto 0px auto;
+  margin: 0px auto 0px auto;
 }
 
 #list-view {
-  margin: 22px 0px 0px 0px;
+  margin: 0px 0px 0px 0px;
 }
 #list-view ul {
-  display: grid;
+  display: inline-grid;
   grid-template-columns: repeat(auto-fill, 130px);
   grid-auto-flow: column;
   grid-gap: 19px;
   border-spacing: 19px;
   list-style: none;
+  height: 140px;
+  width: 100%;
   white-space: nowrap;
   -webkit-overflow-scrolling: touch;
   overflow-x: scroll;
 }
 #list-view li {
   display: flex;
-  margin-bottom: 30px;
   align-items: center;
   justify-content: center;
+  align-self: center;
   white-space: normal;
   text-align: center;
   font-size: 17px;
@@ -198,7 +200,7 @@ h2.theme-grey, button.theme-grey { color: #414750; }
 .list h2 {
   display: inline-block;
   font-weight: bold;
-  margin: 10px 0px;
+  margin: 0px 0px 10px 0px;
 }
 
 #undoBtn {
@@ -213,10 +215,6 @@ h2.theme-grey, button.theme-grey { color: #414750; }
 }
 #undoBtn:hover {
   opacity: 0.6;
-}
-
-.list {
-  margin-top: -16px;
 }
 
 #todo-list {
