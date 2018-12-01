@@ -45,6 +45,7 @@ header p {
 
 main {
   position: relative;
+  right: 0px;
   width: 100%;
   height: auto;
   min-height: 100vh;
@@ -59,7 +60,7 @@ aside {
   right: 0px;
   width: 250px;
   height: 100%;
-  margin: 0px -250px 0px 0px;
+  margin-right: -250px;
   background-color: #0d8c80;
   height: 100%;
   padding: 10px 25px;

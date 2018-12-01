@@ -100,8 +100,9 @@ export class List extends React.Component {
 
   printTasks() {
     const fetchedTasks = this.state.taskList.map( (entry) => {
+      const key = this.props.listTitle + entry.id;
       return (
-        <Task entryID={entry.id} entryBody={entry.body} key={entry.id}
+        <Task entryID={entry.id} entryBody={entry.body} key={key}
           database={this.props.database}
           listTitle={this.props.listTitle}
           removeTask={this.deleteFromDatabase}
