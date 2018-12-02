@@ -23,7 +23,7 @@ body {
 header {
   position: relative;
   width: 100%;
-  height: auto;
+  height: 112px;
   padding: 15px;
   background-color: #0d8c80;
 }
@@ -68,6 +68,17 @@ aside {
   z-index: 900;
   transition: all 200ms ease-in-out;
 }
+#menu-overlay {
+  display: none;
+  background-color: rgba(0, 0, 0, 0.3);
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  right: 250px;
+  top: 112px;
+  -webkit-animation: fade-in 150ms linear;
+  animation: fade-in 150ms linear;
+}
 
 #colors {
   display: grid;
@@ -111,7 +122,10 @@ h2.theme-grey, button.theme-grey { color: #414750; }
 #controls button {
   position: absolute;
   right: 0px;
-  background: none;
+  background-color: transparent;
+  background-image: url("images/menuIcon.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
   border: none;
   color: white;
   cursor: pointer;
@@ -145,9 +159,10 @@ h2.theme-grey, button.theme-grey { color: #414750; }
   padding: 6px 10px;
   border-radius: 6px;
   width: 85%;
+  cursor: pointer;
 }
-#settings #delete-list {
-  border: none;
+#settings #delete-list:hover {
+  border-color: #b33131;
   background-color: #b33131;
 }
 
@@ -410,6 +425,15 @@ li.edit-mode .task-content:focus { outline: none; }
 }
 @-webkit-keyframes slide-in {
   100% { -webkit-transform: translateX(0%); }
+}
+
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; display: none; }
+}
+@keyframes fade-out {
+  0% { opacity: 1; }
+  100% { opacity: 0; display: none; }
 }
 
 .options .optionsBtn:hover, .options .deleteBtn:hover, .options .editBtn:hover {

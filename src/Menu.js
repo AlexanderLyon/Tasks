@@ -19,6 +19,7 @@ export class Menu extends React.Component {
 
     return (
       <aside id="menu" className={colorTheme}>
+      <div id="menu-overlay" onClick={this.props.closeMenu}></div>
         <h2>Color theme</h2>
         <div id="colors">
           <div onClick={this.handleColorClick} data-color="teal"></div>

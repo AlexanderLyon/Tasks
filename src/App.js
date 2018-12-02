@@ -68,13 +68,14 @@ export class App extends React.Component {
   addNewList() {
     this.state.database.close();
     let request = window.indexedDB.open('NotesData', this.state.dbVersion+1);
+    let newName = 'New List';
 
     request.onsuccess = (e) => {
       const db = e.target.result;
       this.setState({
         database: db,
         dbVersion: this.state.dbVersion+1,
-        currentList: 'New List'
+        currentList: newName
       }, () => {
         console.log('New table created');
       });
@@ -82,13 +83,27 @@ export class App extends React.Component {
 
     request.onupgradeneeded = (e) => {
       const db = e.target.result;
-      if (!db.objectStoreNames.contains('New List')) {
-        let objectStore = db.createObjectStore('New List', {keyPath: 'id', autoIncrement: true});
-        objectStore.createIndex('body', 'body', {unique: false});
-      }
-      else {
-        console.error('List with that name already exists');
-      }
+      let nameDecided = false;
+      let count = 0;
+
+      // Find a unique new name for list:
+      do {
+        if (count > 0) {
+          name = 'New List ' + count;
+        }
+        else {
+          name = 'New List';
+        }
+        if (!db.objectStoreNames.contains(name)) {
+          newName = name;
+          nameDecided = true;
+          let objectStore = db.createObjectStore(name, {keyPath: 'id', autoIncrement: true});
+          objectStore.createIndex('body', 'body', {unique: false});
+        } else {
+          count++;
+        }
+      } while (nameDecided == false && count < 100);
+
     };
   }
 
@@ -145,17 +160,26 @@ export class App extends React.Component {
 
 
   menuBtnClick(e) {
-    if (e.target.classList.contains('open')) {
+    const menuBtn = document.querySelector('#menuBtn');
+    const menuOverlay = document.querySelector('#menu-overlay');
+    if (menuBtn.classList.contains('open')) {
       // Close settings
+      menuBtn.classList.remove('open');
       document.querySelector('main').style.right = '0px';
       document.querySelector('aside').style.marginRight = '-250px';
-      e.target.classList.remove('open');
+      document.querySelector('#menu-overlay').style.animation = 'fade-out 150ms linear';
+      window.setTimeout(() => {
+        // reset inline styles after animation
+        menuOverlay.style.display = null;
+        menuOverlay.style.animation = null;
+      }, 150);
     }
     else {
       // Open settings
+      menuBtn.classList.add('open');
       document.querySelector('main').style.right = '250px';
       document.querySelector('aside').style.margin = '0px';
-      e.target.classList.add('open');
+      menuOverlay.style.display = 'block';
     }
   }
 
@@ -233,9 +257,7 @@ export class App extends React.Component {
           </h1>
           <p id="task-count">{this.state.taskCount}</p>
           <div id="controls">
-            <button id="menuBtn" onClick={this.menuBtnClick}>
-              <img src="images/menuIcon.svg" alt=""/>
-            </button>
+            <button id="menuBtn" onClick={this.menuBtnClick}></button>
           </div>
         </header>
 
@@ -260,6 +282,7 @@ export class App extends React.Component {
         <Menu colorTheme={this.state.colorTheme}
           deleteList={this.deleteList}
           setTheme={this.setTheme}
+          closeMenu={this.menuBtnClick}
         />
       </div>
     );
