@@ -181,9 +181,8 @@ export class List extends React.Component {
       // No lists found, create a 'New List'
       this.props.addNewList();
     }
-
   }
-
+  
 
   render() {
     const colorTheme = 'theme-' + this.props.colorTheme;

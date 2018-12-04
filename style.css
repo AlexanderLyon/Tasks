@@ -161,9 +161,11 @@ h2.theme-grey, button.theme-grey { color: #414750; }
   width: 85%;
   cursor: pointer;
 }
+
 #settings #delete-list:hover {
   border-color: #b33131;
   background-color: #b33131;
+  transition: 0.18s;
 }
 
 #content {

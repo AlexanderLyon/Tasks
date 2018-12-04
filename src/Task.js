@@ -78,10 +78,12 @@ export class Task extends React.Component {
       if (open) {
         // Close options menu
         taskEl.classList.remove('options-open');
+        options.querySelector('.optionsBtn i').classList.replace('fa-times', 'fa-ellipsis-v');
       }
       else {
         // Open options menu
         taskEl.classList.add('options-open');
+        options.querySelector('.optionsBtn i').classList.replace('fa-ellipsis-v', 'fa-times');
       }
     }
     else if (options.querySelector('.editBtn').contains(element)) {
