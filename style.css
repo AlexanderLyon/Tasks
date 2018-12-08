@@ -32,6 +32,9 @@ header {
   color: white;
   width: fit-content;
   max-width: 85%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 header p {
   margin: 7px 0px 8px 0px;
