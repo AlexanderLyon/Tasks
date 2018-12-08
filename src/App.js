@@ -99,7 +99,19 @@ export class App extends React.Component {
           nameDecided = true;
           let objectStore = db.createObjectStore(name, {keyPath: 'id', autoIncrement: true});
           objectStore.createIndex('body', 'body', {unique: false});
-        } else {
+
+          // Create 'lastUpdated' entry:
+          let lastUpdatedData;
+          if (localStorage.getItem('lastUpdated') != null) {
+            lastUpdatedData = JSON.parse(localStorage.getItem('lastUpdated'));
+          }
+          else {
+            lastUpdatedData = {};
+          }
+          lastUpdatedData[newName] = new Date();
+          localStorage.setItem('lastUpdated', JSON.stringify(lastUpdatedData));
+        }
+        else {
           count++;
         }
       } while (nameDecided == false && count < 100);
@@ -136,6 +148,13 @@ export class App extends React.Component {
       request.onupgradeneeded = (e) => {
         const db = e.target.result;
         db.deleteObjectStore(this.state.currentList);
+
+        // Now delete 'lastUpdated' entry for this list:
+        let lastUpdatedData = JSON.parse(localStorage.getItem('lastUpdated'));
+        if (lastUpdatedData) {
+          delete lastUpdatedData[this.state.currentList];
+          localStorage.setItem('lastUpdated', JSON.stringify(lastUpdatedData));
+        }
       };
     }
 
@@ -219,6 +238,13 @@ export class App extends React.Component {
       const db = event.target.result;
       const transaction = event.target.transaction;
       transaction.objectStore(this.state.currentList).name = newTitle;
+
+      // Update 'lastUpdated' property name:
+      let lastUpdatedData = JSON.parse(localStorage.getItem('lastUpdated'));
+      const oldData = lastUpdatedData[this.state.currentList];
+      delete lastUpdatedData[this.state.currentList];
+      lastUpdatedData[newTitle] = oldData;
+      localStorage.setItem('lastUpdated', JSON.stringify(lastUpdatedData));
     };
 
   }

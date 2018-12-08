@@ -161,16 +161,27 @@ export class List extends React.Component {
 
         countRequest.onsuccess = () => {
           const taskCount = countRequest.result;
+          let lastUpdatedData;
+
+          if (localStorage.getItem('lastUpdated') != null) {
+            lastUpdatedData = JSON.parse(localStorage.getItem('lastUpdated'));
+          }
+          else {
+            lastUpdatedData = {};
+            lastUpdatedData[this.props.listTitle];
+          }
 
           if (changeMade) {
-            localStorage.setItem('lastUpdated', new Date());
+            // Change 'lastUpdated' to now
+            lastUpdatedData[this.props.listTitle] = new Date();
+            localStorage.setItem('lastUpdated', JSON.stringify(lastUpdatedData));
           }
 
           this.setState({
             taskList: allEntries.result,
             addingTask: false,
             taskCount: taskCount === 1 ? '1 task' : taskCount + ' tasks',
-            lastUpdated: localStorage.getItem('lastUpdated')
+            lastUpdated: lastUpdatedData[this.props.listTitle]
           });
 
           this.props.updateTaskCount(this.state.taskCount);
@@ -182,7 +193,7 @@ export class List extends React.Component {
       this.props.addNewList();
     }
   }
-  
+
 
   render() {
     const colorTheme = 'theme-' + this.props.colorTheme;
