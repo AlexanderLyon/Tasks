@@ -8,7 +8,7 @@ export class List extends React.Component {
     this.state = {
       lastUpdated: null,
       taskList: [],
-      removedList: [],
+      removedItems: 0,
       taskCount: 0,
       addingTask: false
     };
@@ -19,6 +19,7 @@ export class List extends React.Component {
     this.formBlur = this.formBlur.bind(this);
     this.getLastUpdate = this.getLastUpdate.bind(this);
     this.updateList = this.updateList.bind(this);
+    this.addToUndoList = this.addToUndoList.bind(this);
     this.restoreTask = this.restoreTask.bind(this);
     this.deleteFromDatabase = this.deleteFromDatabase.bind(this);
   }
@@ -60,10 +61,14 @@ export class List extends React.Component {
 
 
   restoreTask() {
-    const recentlyDeleted = [...this.state.removedList];
-    const restoredText = recentlyDeleted.pop();
-    this.addNewTask(false, restoredText);
-    this.setState({ removedList: recentlyDeleted });
+    if (sessionStorage.getItem('undoHistory')) {
+      let history = JSON.parse(sessionStorage.getItem('undoHistory'));
+      let restoredText = history[this.props.listTitle].pop();
+      sessionStorage.setItem('undoHistory', JSON.stringify(history));
+      this.addNewTask(false, restoredText);
+      const newCount = history[this.props.listTitle].length;
+      this.setState({ removedItems: newCount });
+    }
   }
 
 
@@ -82,9 +87,7 @@ export class List extends React.Component {
 
 
   deleteFromDatabase(el) {
-    const arr = [...this.state.removedList];
-    arr.push(el.querySelector('.task-content').innerText);
-    this.setState({ removedList: arr });
+    this.addToUndoList(this.props.listTitle, el.querySelector('.task-content').innerText);
 
     const noteID = Number(el.getAttribute('data-note-id'));
     let transaction = this.props.database.transaction([this.props.listTitle], 'readwrite');
@@ -95,6 +98,28 @@ export class List extends React.Component {
       // Entry successfully deleted
       this.updateList(true);
     };
+  }
+
+
+  addToUndoList(list, text) {
+    /* Updates undo history */
+
+    // Make sure undoHistory exists, otherwise create it:
+    if (!sessionStorage.getItem('undoHistory')) {
+      sessionStorage.setItem('undoHistory', '{}');
+    }
+
+    let history = JSON.parse(sessionStorage.getItem('undoHistory'))
+
+    // Make sure an entry for this list exists, otherwise create one:
+    if (!history[list]) {
+      history[list] = [];
+    }
+
+    // Push task to history:
+    history[list].push(text);
+    sessionStorage.setItem('undoHistory', JSON.stringify(history));
+    this.setState({ removedItems: history[list].length });
   }
 
 
@@ -185,6 +210,15 @@ export class List extends React.Component {
           });
 
           this.props.updateTaskCount(this.state.taskCount);
+
+          // Show / hide 'undo' button
+          let undoHistory = JSON.parse(sessionStorage.getItem('undoHistory'));
+          if (undoHistory && undoHistory[this.props.listTitle] && undoHistory[this.props.listTitle].length > 0) {
+            this.setState({ removedItems: undoHistory[this.props.listTitle].length });
+          }
+          else {
+            this.setState({ removedItems: 0 });
+          }
         };
       };
     }
@@ -203,7 +237,7 @@ export class List extends React.Component {
         {this.state.taskList.length > 0 &&
           <h2 className={colorTheme}>Incomplete</h2>
         }
-        {this.state.removedList.length > 0 &&
+        {this.state.removedItems > 0 &&
           <button id="undoBtn" className={colorTheme} onClick={this.restoreTask}>
             <i className="fas fa-undo-alt"></i> Undo
           </button>

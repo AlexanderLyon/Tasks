@@ -78,6 +78,8 @@ export class Task extends React.Component {
       if (open) {
         // Close options menu
         taskEl.classList.remove('options-open');
+        taskEl.classList.remove('edit-mode');
+        taskEl.querySelector('.editBtn i').classList.replace('fa-save', 'fa-pencil-alt');
         options.querySelector('.optionsBtn i').classList.replace('fa-times', 'fa-ellipsis-v');
       }
       else {
