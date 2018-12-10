@@ -200,6 +200,7 @@ h2.theme-grey, button.theme-grey { color: #414750; }
   align-self: center;
   white-space: normal;
   text-align: center;
+  overflow: hidden;
   font-size: 17px;
   line-height: 24px;
   padding: 6px;
@@ -251,11 +252,10 @@ h2.theme-grey, button.theme-grey { color: #414750; }
   position: relative;
   margin: 14px 0px;
   padding: 8px 45px 8px 24px;
-  height: 47px;
+  height: auto;
   line-height: 31px;
   font-weight: 600;
   font-size: 18px;
-  white-space: nowrap;
   border: none;
   border-radius: 6px;
   box-shadow: rgba(141, 141, 142, 0.2) 0px 4px 40px 4px, rgba(197, 197, 197, 0.2) 0px 20px 15px -20px;
