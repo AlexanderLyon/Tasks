@@ -29,8 +29,11 @@ export class Menu extends React.Component {
           <div onClick={this.handleColorClick} data-color="grey"></div>
         </div>
         <div id="settings">
+          <button id="backup-btn" onClick={this.props.backUp}>
+            <i class="fas fa-cloud"></i> Back Up Lists
+          </button>
           <button id="delete-list" onClick={this.props.deleteList}>
-            Delete this list
+            <i class="fas fa-trash"></i> Delete this list
           </button>
         </div>
       </aside>

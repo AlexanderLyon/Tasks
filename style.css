@@ -100,17 +100,6 @@ aside {
   cursor: pointer;
 }
 
-div[data-color="teal"], .theme-teal:not(h2), #buffer.theme-teal, #list-view .theme-teal { background-color: #0d8c80; }
-h2.theme-teal, button.theme-teal { color: #0d8c80; }
-div[data-color="blue"], .theme-blue:not(h2), #buffer.theme-blue, #list-view .theme-blue { background-color: #206c8a; }
-h2.theme-blue, button.theme-blue { color: #206c8a; }
-div[data-color="lavender"], .theme-lavender:not(h2), #buffer.theme-lavendar, #list-view .theme-lavendar { background-color: #996aa2; }
-h2.theme-lavender, button.theme-lavender { color: #996aa2; }
-div[data-color="blush"], .theme-blush:not(h2), #buffer.theme-blush, #list-view .theme-blush { background-color: #ce8e91; }
-h2.theme-blush, button.theme-blush { color: #ce8e91; }
-div[data-color="grey"], .theme-grey:not(h2), #buffer.theme-grey, #list-view .theme-grey { background-color: #414750; }
-h2.theme-grey, button.theme-grey { color: #414750; }
-
 #list-view [class^="theme"] { color: white; }
 
 #controls {
@@ -158,17 +147,19 @@ h2.theme-grey, button.theme-grey { color: #414750; }
   background-color: transparent;
   color: white;
   border: 2px solid white;
-  font-size: 22px;
+  font-size: 20px;
   padding: 6px 10px;
   border-radius: 6px;
   width: 85%;
+  transition: 0.18s;
   cursor: pointer;
 }
+
+#settings button i { margin-right: 5px; }
 
 #settings #delete-list:hover {
   border-color: #b33131;
   background-color: #b33131;
-  transition: 0.18s;
 }
 
 #content {
@@ -360,6 +351,17 @@ li.edit-mode .task-content:focus { outline: none; }
 .options .optionsBtn { right: 7px; }
 .options .deleteBtn { right: 57px; }
 .options .editBtn { right: 107px; }
+
+div[data-color="teal"], .theme-teal:not(h2), #buffer.theme-teal, #list-view .theme-teal { background-color: #0d8c80; }
+h2.theme-teal, button.theme-teal { color: #0d8c80; }
+div[data-color="blue"], .theme-blue:not(h2), #buffer.theme-blue, #list-view .theme-blue { background-color: #206c8a; }
+h2.theme-blue, button.theme-blue { color: #206c8a; }
+div[data-color="lavender"], .theme-lavender:not(h2), #buffer.theme-lavender, #list-view .theme-lavender { background-color: #996aa2; }
+h2.theme-lavender, button.theme-lavender { color: #996aa2; }
+div[data-color="blush"], .theme-blush:not(h2), #buffer.theme-blush, #list-view .theme-blush { background-color: #ce8e91; }
+h2.theme-blush, button.theme-blush { color: #ce8e91; }
+div[data-color="grey"], .theme-grey:not(h2), #buffer.theme-grey, #list-view .theme-grey { background-color: #414750; }
+h2.theme-grey, button.theme-grey { color: #414750; }
 
 /*======================= Animations =======================*/
 @keyframes task-enter {

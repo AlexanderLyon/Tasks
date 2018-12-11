@@ -16,6 +16,7 @@ export class App extends React.Component {
     };
 
     this.loadDatabase = this.loadDatabase.bind(this);
+    this.syncDatabase = this.syncDatabase.bind(this);
     this.updateTaskCount = this.updateTaskCount.bind(this);
     this.updateListName = this.updateListName.bind(this);
     this.titleKeydown = this.titleKeydown.bind(this);
@@ -62,6 +63,11 @@ export class App extends React.Component {
       }, 3000);
 
     };
+  }
+
+
+  syncDatabase() {
+    console.log("Backing up...");
   }
 
 
@@ -306,6 +312,7 @@ export class App extends React.Component {
         </section>
 
         <Menu colorTheme={this.state.colorTheme}
+          backUp={this.syncDatabase}
           deleteList={this.deleteList}
           setTheme={this.setTheme}
           closeMenu={this.menuBtnClick}
