@@ -255,8 +255,8 @@ aside {
   color: #555555;
   transition: 200ms;
   background-color: #FFFFFF;
-  -webkit-animation: task-enter 0.6s ease-in-out;
-  animation: task-enter 0.6s ease-in-out;
+  -webkit-animation: task-enter 0.45s ease-in-out;
+  animation: task-enter 0.45s ease-in-out;
 }
 
 .list li:hover:not(.removed), .list li:focus:not(.removed) {
@@ -301,7 +301,7 @@ li .icon {
 }
 
 .list li.edit-mode {
-  background-color: #f0f3f7;
+  background-color: #f4f6f9;
   box-shadow: 1px 1px 10px 0px rgba(0, 0, 0, 0.3);
   border: none;
   border-radius: 8px;
