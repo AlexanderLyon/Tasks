@@ -67,7 +67,37 @@ export class App extends React.Component {
 
 
   syncDatabase() {
-    console.log("Backing up...");
+    let backupID = localStorage.getItem('backupID');
+    const backupData = [];
+
+    if (!backupID) {
+      // No previous backupID found
+      console.log("First backup, generating unique ID...");
+      const uniqueID = Math.round((new Date() * 0.16) + 15);
+      localStorage.setItem('backupID', uniqueID);
+      this.syncDatabase();
+    }
+    else {
+      const db = this.state.database;
+      const objectStores = db.objectStoreNames;
+      for (let key in objectStores) {
+        if (objectStores.hasOwnProperty(key)) {
+          const listTitle = objectStores[key];
+          const objectStore = db.transaction(listTitle).objectStore(listTitle);
+          const allEntries = objectStore.getAll();
+
+          allEntries.onsuccess = () => {
+            backupData.push(allEntries.result);
+          };
+        }
+      }
+
+      // POST
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', 'backups/save.php');
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.send('id=' + backupID + '&backupData=' + backupData);
+    }
   }
 
 
