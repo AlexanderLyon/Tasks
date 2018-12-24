@@ -297,10 +297,21 @@ export class App extends React.Component {
 
   toggleServerSync() {
     if (this.state.syncing) {
+      // Disable sync and delete backup
       localStorage.setItem('serverSync', false);
       this.setState({syncing: false});
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', 'backups/delete.php');
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          console.log("Task backup successfully deleted")
+        }
+      };
+      xhr.send('id=' + localStorage.getItem('backupID'));
     }
     else {
+      // Enable syncing
       localStorage.setItem('serverSync', true);
       this.setState({syncing: true});
     }
