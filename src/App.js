@@ -10,12 +10,14 @@ export class App extends React.Component {
     this.state = {
       database: null,
       dbVersion: null,
+      syncing: localStorage.getItem('serverSync'),
       currentList: null,
       taskCount: 0,
       colorTheme: 'teal'
     };
 
     this.loadDatabase = this.loadDatabase.bind(this);
+    this.toggleServerSync = this.toggleServerSync.bind(this);
     this.syncDatabase = this.syncDatabase.bind(this);
     this.updateTaskCount = this.updateTaskCount.bind(this);
     this.updateListName = this.updateListName.bind(this);
@@ -68,7 +70,7 @@ export class App extends React.Component {
 
   syncDatabase() {
     let backupID = localStorage.getItem('backupID');
-    const backupData = [];
+    const backupData = {};
 
     if (!backupID) {
       // No previous backupID found
@@ -87,16 +89,23 @@ export class App extends React.Component {
           const allEntries = objectStore.getAll();
 
           allEntries.onsuccess = () => {
-            backupData.push(allEntries.result);
+            backupData[listTitle] = allEntries.result;
           };
         }
       }
 
       // POST
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', 'backups/save.php');
-      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-      xhr.send('id=' + backupID + '&backupData=' + backupData);
+      window.setTimeout(() => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'backups/save.php');
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            // console.log("Tasks synced successfully")
+          }
+        };
+        xhr.send('id=' + backupID + '&backupData=' + JSON.stringify(backupData));
+      }, 500);
     }
   }
 
@@ -286,6 +295,18 @@ export class App extends React.Component {
   }
 
 
+  toggleServerSync() {
+    if (this.state.syncing) {
+      localStorage.setItem('serverSync', false);
+      this.setState({syncing: false});
+    }
+    else {
+      localStorage.setItem('serverSync', true);
+      this.setState({syncing: true});
+    }
+  }
+
+
   updateTaskCount(val) {
     this.setState({
       taskCount: val
@@ -304,6 +325,14 @@ export class App extends React.Component {
       this.setTheme(this.state.colorTheme);
     });
   }
+
+
+  componentDidUpdate() {
+    if (this.state.syncing && this.state.database) {
+      this.syncDatabase();
+    }
+  }
+
 
   render() {
     const colorTheme = 'theme-' + this.state.colorTheme;
@@ -342,7 +371,8 @@ export class App extends React.Component {
         </section>
 
         <Menu colorTheme={this.state.colorTheme}
-          backUp={this.syncDatabase}
+          toggleBackup={this.toggleServerSync}
+          syncing={this.state.syncing}
           deleteList={this.deleteList}
           setTheme={this.setTheme}
           closeMenu={this.menuBtnClick}
