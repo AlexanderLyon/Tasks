@@ -31,14 +31,14 @@ export class Menu extends React.Component {
         <div id="settings">
           <button id="backup-btn" onClick={this.props.toggleBackup}>
             {!this.props.syncing &&
-              <span><i class="fas fa-cloud"></i> Back Up Lists</span>
+              <span><i className="fas fa-cloud"></i> Back Up Lists</span>
             }
             {this.props.syncing &&
-              <span><i class="fas fa-cloud"></i> Disable Syncing</span>
+              <span><i className="fas fa-cloud"></i> Disable Syncing</span>
             }
           </button>
           <button id="delete-list" onClick={this.props.deleteList}>
-            <i class="fas fa-trash"></i> Delete this list
+            <i className="fas fa-trash"></i> Delete this list
           </button>
         </div>
       </aside>
