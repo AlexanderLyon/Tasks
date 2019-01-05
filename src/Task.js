@@ -143,7 +143,7 @@ export class Task extends React.Component {
         onClick={this.handleClick}
         onKeyDown={this.taskKeydown}
         onKeyUp={this.taskKeyup} >
-        <span class='icon'></span>
+        <span className='icon'></span>
         <span className='task-content'>{this.props.entryBody}</span>
         <span className='options' onClick={this.handleClick}>
           <span className='editBtn'><i className='fas fa-pencil-alt'></i></span>

@@ -173,7 +173,8 @@ export class App extends React.Component {
 
 
   deleteList() {
-    let confirmation = confirm('Are you sure you want to delete list "' + this.state.currentList + '"?');
+    let confirmation = confirm('Are you sure you want to delete list "' + this.state.currentList + 
+      '"? This action can not be undone.');
 
     if (confirmation) {
       this.state.database.close();
@@ -285,11 +286,19 @@ export class App extends React.Component {
       transaction.objectStore(this.state.currentList).name = newTitle;
 
       // Update 'lastUpdated' property name:
-      let lastUpdatedData = JSON.parse(localStorage.getItem('lastUpdated'));
-      const oldData = lastUpdatedData[this.state.currentList];
-      delete lastUpdatedData[this.state.currentList];
-      lastUpdatedData[newTitle] = oldData;
-      localStorage.setItem('lastUpdated', JSON.stringify(lastUpdatedData));
+      if (localStorage.getItem('lastUpdated') != null) {
+        let lastUpdatedData = JSON.parse(localStorage.getItem('lastUpdated'));
+        const oldData = lastUpdatedData[this.state.currentList];
+        delete lastUpdatedData[this.state.currentList];
+        lastUpdatedData[newTitle] = oldData;
+        localStorage.setItem('lastUpdated', JSON.stringify(lastUpdatedData));
+      }
+      else {
+        let lastUpdatedData = {};
+        lastUpdatedData[newTitle] = new Date();
+        localStorage.setItem('lastUpdated', JSON.stringify(lastUpdatedData));
+      }
+
     };
 
   }
